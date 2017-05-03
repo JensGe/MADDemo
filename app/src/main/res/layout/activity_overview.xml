@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_overview"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="de.honzont.jensge.maddemo.OverviewActivity">
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/helloText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello World!"
+        android:paddingBottom="12dp"/>
+
+    <ScrollView
+        android:layout_below="@+id/helloText"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <LinearLayout
+        android:id="@+id/listView"
+        android:orientation="vertical"
+        android:layout_below="@+id/helloText"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+    </ScrollView>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/addItemAction"
+        android:src="@drawable/white_plus_36"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"/>
+
+</RelativeLayout>
