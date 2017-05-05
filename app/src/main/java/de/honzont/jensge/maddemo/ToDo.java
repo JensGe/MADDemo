@@ -11,11 +11,11 @@ public class ToDo implements Serializable{
     private String name;
     private long dueDate;
 
-    public ToDo(String name) {
-        this.name = name;
+    public ToDo() {
     }
 
-    public ToDo() {
+    public ToDo(String name) {
+        this.name = name;
     }
 
     public String getName() {

@@ -13,6 +13,8 @@ import android.widget.Toast;
 import java.util.Arrays;
 import java.util.List;
 
+import static de.honzont.jensge.maddemo.DetailviewActivity.TODO_ITEM;
+
 public class OverviewActivity extends AppCompatActivity implements View.OnClickListener{
 
     protected static String logger = OverviewActivity.class.getSimpleName();
@@ -45,18 +47,6 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
         // 4. set listeners to allow user interactions
         helloText.setOnClickListener(this);
 
-        for (int i=0;i<listView.getChildCount();i++) {
-            View currentChild = listView.getChildAt(i);
-            if (currentChild instanceof TextView) {
-                currentChild.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        listItemSelected(v);
-                    }
-                });
-            }
-        }
-
         addItemAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,7 +75,7 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
         listItemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ToDo itemName = (ToDo)v.getTag();
+                ToDo item = (ToDo) v.getTag();
                 showDetailviewForItemName(item);
 
             }
@@ -94,30 +84,9 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
         listView.addView(listItemView);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
-            String itemName = data.getStringExtra("itemName");
-            addItemToListView(new ToDo(itemName));
-        }
-    }
-
     private void showDetailviewForItemName(ToDo item) {
         Intent detailviewIntent = new Intent(this, DetailviewActivity.class);
-        detailviewIntent.putExtra("itemName", item);
-
-        startActivity(detailviewIntent);
-    }
-
-    private void listItemSelected(View v) {
-//        Toast.makeText(this, "selected: " + ((TextView)v).getText(), Toast.LENGTH_SHORT).show();
-        String itemName = ((TextView)v).getText().toString();
-
-//        DetailviewActivity detailviewActivity = new DetailviewActivity();
-//        detailviewActivity.onCreate(null);
-
-        Intent detailviewIntent = new Intent(this, DetailviewActivity.class);
-        detailviewIntent.putExtra("itemName", itemName);
+        detailviewIntent.putExtra(TODO_ITEM, item);
 
         startActivity(detailviewIntent);
     }
@@ -126,6 +95,14 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
         Intent addNewItemIntent = new Intent(this, DetailviewActivity.class);
 
         startActivityForResult(addNewItemIntent, 1);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
+            ToDo item = (ToDo)data.getSerializableExtra(TODO_ITEM);
+            addItemToListView(item);
+        }
     }
 
     @Override
