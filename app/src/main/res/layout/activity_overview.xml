@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:text="Hello World!"
         android:paddingBottom="12dp"/>
-
+<!--
     <ScrollView
         android:layout_below="@+id/helloText"
         android:layout_width="match_parent"
@@ -26,6 +26,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
     </ScrollView>
+-->
+    <ListView
+        android:id="@+id/listView"
+        android:layout_below="@id/helloText"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </ListView>
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/addItemAction"
         android:src="@drawable/white_plus_36"

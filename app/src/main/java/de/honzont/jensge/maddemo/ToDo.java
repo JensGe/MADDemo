@@ -33,4 +33,12 @@ public class ToDo implements Serializable{
     public void setDueDate(long dueDate) {
         this.dueDate = dueDate;
     }
+
+    @Override
+    public String toString() {
+        return "ToDo{" +
+                "name='" + name + '\'' +
+                ", dueDate=" + dueDate +
+                '}';
+    }
 }

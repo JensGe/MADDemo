@@ -2,11 +2,14 @@ package de.honzont.jensge.maddemo;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,8 +25,13 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
     private TextView helloText;
     private ViewGroup listView;
     private View addItemAction;
+    private ArrayAdapter<ToDo> listViewAdapter;
 
-    private List<ToDo> items = Arrays.asList(new ToDo[]{new ToDo("lorem"), new ToDo("ipsum"), new ToDo("dolor"), new ToDo("sit"), new ToDo("amet"), new ToDo("adispicsing"), new ToDo("elit")});
+    private List<ToDo> items = Arrays.asList(new ToDo[]{new ToDo("lorem"), new ToDo("ipsum"), new ToDo("dolor"), new ToDo("sit"), new ToDo("amet"), new ToDo("adispicsing"), new ToDo("elit"), new ToDo("lirem"), new ToDo("sdfiff"), new ToDo("sdfwerfw"), new ToDo("ame2t"), new ToDo("adispicsing2"), new ToDo("elit2"), new ToDo("ám3"), new ToDo("adispicsing3"), new ToDo("elit3")});
+
+    private class ItemViewHolder {
+        public TextView itemNameView;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +62,44 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
             }
         });
 
+        // instantiate listview with adapter
+        listViewAdapter = new ArrayAdapter<ToDo>(this,R.layout.itemview_overview) {
+            @NonNull
+            @Override
+            public View getView(int position, View itemView, ViewGroup parent) {
+
+                if (itemView != null) {
+                    Log.i(logger, "reusing existing itemView for element at position: " + position);
+                }
+
+                else {
+                    Log.i(logger, "creating new itemView for element at position: " + position);
+                    // create a new instance of list item view
+                    itemView = getLayoutInflater().inflate(R.layout.itemview_overview,null);
+                    // read out the text view for the item name
+                    TextView itemNameView = (TextView)itemView.findViewById(R.id.itemName);
+                    // create a new instance of the view holder
+                    ItemViewHolder itemViewHolder = new ItemViewHolder();
+                    //set the itemNameView attribut on view holder to text view
+                    itemViewHolder.itemNameView = itemNameView;
+                    // set thte view holder on the list item view
+                    itemView.setTag(itemViewHolder);
+                }
+
+                ItemViewHolder viewHolder = (ItemViewHolder)itemView.getTag();
+                ToDo item = getItem(position);
+                //Log.i(logger,"creating view for position " + position + " and item " + item);
+
+                viewHolder.itemNameView.setText(item.getName());
+
+                return itemView;
+            }
+
+
+        };
+        ((ListView)listView).setAdapter(listViewAdapter);
+        listViewAdapter.setNotifyOnChange(true);
+
         readItemsAndFillListView();
     }
 
@@ -66,7 +112,8 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
 
     private void addItemToListView(ToDo item) {
 
-        View listItemView = getLayoutInflater().inflate(R.layout.itemview_overview, null);
+        listViewAdapter.add(item);
+/*        View listItemView = getLayoutInflater().inflate(R.layout.itemview_overview, null);
         TextView itemNameView = (TextView)listItemView.findViewById(R.id.itemName);
 
         listItemView.setTag(item);
@@ -81,7 +128,7 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
             }
         });
 
-        listView.addView(listItemView);
+        listView.addView(listItemView); */
     }
 
     private void showDetailviewForItemName(ToDo item) {
