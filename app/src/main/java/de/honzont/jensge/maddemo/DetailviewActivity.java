@@ -38,7 +38,6 @@ public class DetailviewActivity extends AppCompatActivity {
             itemNameText.setText(item.getName());
         }
 
-
         // prepare for user interaction
         saveItemButton.setOnClickListener(new View.OnClickListener() {
             @Override

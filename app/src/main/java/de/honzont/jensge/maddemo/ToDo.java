@@ -10,6 +10,8 @@ public class ToDo implements Serializable{
 
     private String name;
     private long dueDate;
+    private boolean favourite;
+    private boolean done;
 
     public ToDo() {
     }
