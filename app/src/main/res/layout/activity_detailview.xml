@@ -10,7 +10,7 @@
         android:layout_height="wrap_content" />
     <Button
         android:visibility="gone"
-        android:text="Save"
+        android:src="@drawable/plus_white_36"
         android:id="@+id/saveItem"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

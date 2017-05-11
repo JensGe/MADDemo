@@ -36,7 +36,7 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/addItemAction"
-        android:src="@drawable/white_plus_36"
+        android:src="@drawable/plus_white_36"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
