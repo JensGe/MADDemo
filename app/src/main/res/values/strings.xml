@@ -3,4 +3,6 @@
     <string name="app_content">Hello Android!</string>
     <string name="title_overview">Overview</string>
     <string name="title_detailview">Detailview</string>
+    <string name="itemName_hint">New ToDo</string>
+    <string name="itemDescription_hint">Describe your ToDo</string>
 </resources>

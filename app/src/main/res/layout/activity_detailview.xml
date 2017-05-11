@@ -6,8 +6,16 @@
 
     <EditText
         android:id="@+id/itemName"
+        android:hint="@string/itemName_hint"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"/>
+
+    <EditText
+        android:id="@+id/itemDescription"
+        android:hint="@string/itemDescription_hint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
     <Button
         android:visibility="gone"
         android:src="@drawable/plus_white_36"
