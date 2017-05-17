@@ -1,4 +1,4 @@
-package de.honzont.jensge.maddemo;
+package de.honzont.jensge.maddemo.model;
 
 import java.io.Serializable;
 

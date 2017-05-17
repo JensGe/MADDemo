@@ -1,7 +1,9 @@
 package de.honzont.jensge.maddemo;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,13 +11,16 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Arrays;
 import java.util.List;
+
+import de.honzont.jensge.maddemo.model.IToDoCRUDItemOperations;
+import de.honzont.jensge.maddemo.model.SimpleToDoCRUDOperationsImpl;
+import de.honzont.jensge.maddemo.model.ToDo;
 
 import static de.honzont.jensge.maddemo.DetailviewActivity.TODO_ITEM;
 
@@ -28,7 +33,8 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
     private View addItemAction;
     private ArrayAdapter<ToDo> listViewAdapter;
 
-    private List<ToDo> items = Arrays.asList(new ToDo[]{new ToDo("lorem"), new ToDo("ipsum"), new ToDo("dolor"), new ToDo("sit"), new ToDo("amet"), new ToDo("adispicsing"), new ToDo("elit"), new ToDo("lirem"), new ToDo("sdfiff"), new ToDo("sdfwerfw"), new ToDo("ame2t"), new ToDo("adispicsing2"), new ToDo("elit2"), new ToDo("ám3"), new ToDo("adispicsing3"), new ToDo("elit3")});
+    private ProgressDialog progressDialog;
+    private IToDoCRUDItemOperations crudOperations;
 
     private class ItemViewHolder {
         public TextView itemNameView;
@@ -49,6 +55,7 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
         Log.i(logger,"listView: " + listView);
         addItemAction = findViewById(R.id.addItemAction);
 
+        progressDialog = new ProgressDialog(this);
 
         // 3. set content on the elements
         setTitle(R.string.title_overview);
@@ -102,14 +109,60 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
         ((ListView)listView).setAdapter(listViewAdapter);
         listViewAdapter.setNotifyOnChange(true);
 
+        crudOperations = new SimpleToDoCRUDOperationsImpl();
+
         readItemsAndFillListView();
     }
 
     private void readItemsAndFillListView() {
 
+        List<ToDo> items = crudOperations.readAllToDos();
+
         for (ToDo item : items) {
             addItemToListView(item);
         }
+    }
+
+    private void createAndShowItem(/*final*/ ToDo item) {
+
+       /* progressDialog.show();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ToDo createdItem = crudOperations.createToDo(item);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        addItemToListView(item);
+                        progressDialog.hide();
+                    }
+                });
+
+
+            }
+        }).start();*/
+
+        new AsyncTask<ToDo,Void,ToDo>(){
+
+            @Override
+            protected void onPreExecute() {
+                progressDialog.show();
+            }
+
+            @Override
+            protected ToDo doInBackground(ToDo... params) {
+                ToDo createdItem = crudOperations.createToDo(params[0]);
+                return createdItem;
+            }
+
+            @Override
+            protected void onPostExecute(ToDo item) {
+                addItemToListView(item);
+                progressDialog.hide();
+            }
+        }.execute(item);
+
     }
 
     private void addItemToListView(ToDo item) {
@@ -150,7 +203,8 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
             ToDo item = (ToDo)data.getSerializableExtra(TODO_ITEM);
-            addItemToListView(item);
+            //addItemToListView(item);
+            createAndShowItem(item);
         }
     }
 
@@ -163,4 +217,10 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
             Log.i(logger,"onClick() on unknown element: " + v);
         }
         }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        /****/
+    }
 }

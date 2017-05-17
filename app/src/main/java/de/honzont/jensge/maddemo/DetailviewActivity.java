@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import de.honzont.jensge.maddemo.model.ToDo;
+
 /**
  * Created by Jens on 26.04.2017.
  */
