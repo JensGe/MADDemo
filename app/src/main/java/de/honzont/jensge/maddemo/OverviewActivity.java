@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -19,12 +20,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.honzont.jensge.maddemo.model.IToDoCRUDItemOperations;
+import de.honzont.jensge.maddemo.model.LocalToDoCRUDOperations;
 import de.honzont.jensge.maddemo.model.SimpleToDoCRUDOperationsImpl;
 import de.honzont.jensge.maddemo.model.ToDo;
 
 import static de.honzont.jensge.maddemo.DetailviewActivity.TODO_ITEM;
 
-public class OverviewActivity extends AppCompatActivity implements View.OnClickListener{
+public class OverviewActivity extends AppCompatActivity implements View.OnClickListener {
 
     protected static String logger = OverviewActivity.class.getSimpleName();
 
@@ -49,10 +51,10 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
         setContentView(R.layout.activity_overview);
 
         // 2. read out elements from the view
-        helloText = (TextView)findViewById(R.id.helloText);
-        Log.i(logger,"HelloText: " + helloText);
-        listView = (ViewGroup)findViewById(R.id.listView);
-        Log.i(logger,"listView: " + listView);
+        helloText = (TextView) findViewById(R.id.helloText);
+        Log.i(logger, "HelloText: " + helloText);
+        listView = (ViewGroup) findViewById(R.id.listView);
+        Log.i(logger, "listView: " + listView);
         addItemAction = findViewById(R.id.addItemAction);
 
         progressDialog = new ProgressDialog(this);
@@ -72,21 +74,19 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
         });
 
         // instantiate listview with adapter
-        listViewAdapter = new ArrayAdapter<ToDo>(this,R.layout.itemview_overview) {
+        listViewAdapter = new ArrayAdapter<ToDo>(this, R.layout.itemview_overview) {
             @NonNull
             @Override
             public View getView(int position, View itemView, ViewGroup parent) {
 
                 if (itemView != null) {
                     Log.i(logger, "reusing existing itemView for element at position: " + position);
-                }
-
-                else {
+                } else {
                     Log.i(logger, "creating new itemView for element at position: " + position);
                     // create a new instance of list item view
-                    itemView = getLayoutInflater().inflate(R.layout.itemview_overview,null);
+                    itemView = getLayoutInflater().inflate(R.layout.itemview_overview, null);
                     // read out the text view for the item name
-                    TextView itemNameView = (TextView)itemView.findViewById(R.id.itemName);
+                    TextView itemNameView = (TextView) itemView.findViewById(R.id.itemName);
                     // create a new instance of the view holder
                     ItemViewHolder itemViewHolder = new ItemViewHolder();
                     //set the itemNameView attribut on view holder to text view
@@ -95,7 +95,7 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
                     itemView.setTag(itemViewHolder);
                 }
 
-                ItemViewHolder viewHolder = (ItemViewHolder)itemView.getTag();
+                ItemViewHolder viewHolder = (ItemViewHolder) itemView.getTag();
                 ToDo item = getItem(position);
                 //Log.i(logger,"creating view for position " + position + " and item " + item);
 
@@ -106,21 +106,53 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
 
 
         };
-        ((ListView)listView).setAdapter(listViewAdapter);
+        ((ListView) listView).setAdapter(listViewAdapter);
         listViewAdapter.setNotifyOnChange(true);
 
-        crudOperations = new SimpleToDoCRUDOperationsImpl();
+        ((ListView) listView).setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ToDo selectedItem = listViewAdapter.getItem(position);
+                showDetailviewForItemName(selectedItem);
+            }
+        });
+        crudOperations = /*new SimpleToDoCRUDOperationsImpl()*/ new LocalToDoCRUDOperations(this);
 
         readItemsAndFillListView();
     }
 
     private void readItemsAndFillListView() {
 
-        List<ToDo> items = crudOperations.readAllToDos();
 
-        for (ToDo item : items) {
-            addItemToListView(item);
-        }
+//        List<ToDo> items = crudOperations.readAllToDos();
+//
+//        for (ToDo item : items) {
+//            addItemToListView(item);
+//        }
+
+        new AsyncTask<Void, Void, List<ToDo>>() {
+
+            @Override
+            protected void onPreExecute() {
+                progressDialog.setMessage("Loading ToDo Items");
+                progressDialog.show();
+            }
+
+            @Override
+            protected List<ToDo> doInBackground(Void... params) {
+                return crudOperations.readAllToDos();
+            }
+
+            @Override
+            protected void onPostExecute(List<ToDo> toDos) {
+                progressDialog.hide();
+                for (ToDo item : toDos) {
+                    addItemToListView(item);
+                }
+            }
+        }.execute();
+
+
     }
 
     private void createAndShowItem(/*final*/ ToDo item) {
@@ -143,10 +175,11 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
             }
         }).start();*/
 
-        new AsyncTask<ToDo,Void,ToDo>(){
+        new AsyncTask<ToDo, Void, ToDo>() {
 
             @Override
             protected void onPreExecute() {
+                progressDialog.setMessage("Creating ToDo Item");
                 progressDialog.show();
             }
 
@@ -202,7 +235,7 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
-            ToDo item = (ToDo)data.getSerializableExtra(TODO_ITEM);
+            ToDo item = (ToDo) data.getSerializableExtra(TODO_ITEM);
             //addItemToListView(item);
             createAndShowItem(item);
         }
@@ -210,13 +243,12 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onClick(View v) {
-        if (v== helloText) {
-        Log.i(logger,"onClick(): " + v);
+        if (v == helloText) {
+            Log.i(logger, "onClick(): " + v);
+        } else {
+            Log.i(logger, "onClick() on unknown element: " + v);
+        }
     }
-    else {
-            Log.i(logger,"onClick() on unknown element: " + v);
-        }
-        }
 
     @Override
     protected void onDestroy() {

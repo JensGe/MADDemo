@@ -10,6 +10,7 @@ public class ToDo implements Serializable{
 
     private String name;
     private long dueDate;
+    private long id;
     private boolean favourite;
     private boolean done;
 
@@ -36,11 +37,20 @@ public class ToDo implements Serializable{
         this.dueDate = dueDate;
     }
 
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
         return "ToDo{" +
                 "name='" + name + '\'' +
                 ", dueDate=" + dueDate +
+                ", id=" + id +
                 '}';
     }
 }

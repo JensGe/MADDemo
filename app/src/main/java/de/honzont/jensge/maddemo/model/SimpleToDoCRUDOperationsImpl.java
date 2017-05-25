@@ -22,6 +22,11 @@ public class SimpleToDoCRUDOperationsImpl implements IToDoCRUDItemOperations {
 
     @Override
     public List<ToDo> readAllToDos() {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return Arrays.asList(new ToDo[]{new ToDo("lorem"), new ToDo("ipsum"), new ToDo("dolor"), new ToDo("sit"), new ToDo("amet"), new ToDo("adispicsing"), new ToDo("elit")/*, new ToDo("lirem"), new ToDo("sdfiff"), new ToDo("sdfwerfw"), new ToDo("ame2t"), new ToDo("adispicsing2"), new ToDo("elit2"), new ToDo("ám3"), new ToDo("adispicsing3"), new ToDo("elit3")*/});
     }
 
