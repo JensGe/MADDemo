@@ -74,6 +74,13 @@ public class LocalToDoCRUDOperations implements IToDoCRUDItemOperations {
 
     @Override
     public boolean deleteToDo(long id) {
+
+        int numOfRows = db.delete("TODOS","ID=?", new String[]{String.valueOf(id)});
+
+        if (numOfRows>0) {
+            return true;
+        }
+
         return false;
     }
 }

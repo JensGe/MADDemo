@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,8 +20,12 @@ import de.honzont.jensge.maddemo.model.ToDo;
 public class DetailviewActivity extends AppCompatActivity {
 
     public static final String TODO_ITEM = "toDoItem";
+    public static final int RESULT_DELETE_ITEM = 10 ;
+
     private TextView itemNameText;
     private Button saveItemButton;
+
+    private ToDo item;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,7 +40,7 @@ public class DetailviewActivity extends AppCompatActivity {
 
         // set content on ui elements
         setTitle(R.string.title_detailview);
-        ToDo item = (ToDo)getIntent().getSerializableExtra(TODO_ITEM);
+        item = (ToDo)getIntent().getSerializableExtra(TODO_ITEM);
         if (item != null) {
             itemNameText.setText(item.getName());
         }
@@ -60,6 +65,16 @@ public class DetailviewActivity extends AppCompatActivity {
         finish();
     }
 
+    private void deleteItem() {
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra(TODO_ITEM, item);
+        //Hier reicht die Übergabe der ID
+        setResult(RESULT_DELETE_ITEM,returnIntent);
+        Log.i("DetailviewActivity","finishing");
+        finish();
+
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.options_overview, menu);
@@ -74,7 +89,7 @@ public class DetailviewActivity extends AppCompatActivity {
             return true;
         }
         else if (item.getItemId() == R.id.deleteItem) {
-
+            deleteItem();
             return true;
         }
         return super.onOptionsItemSelected(item);

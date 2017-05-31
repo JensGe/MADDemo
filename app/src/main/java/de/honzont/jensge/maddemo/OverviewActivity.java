@@ -28,6 +28,8 @@ import static de.honzont.jensge.maddemo.DetailviewActivity.TODO_ITEM;
 
 public class OverviewActivity extends AppCompatActivity implements View.OnClickListener {
 
+    public static final int EDIT_ITEM = 2;
+    public static final int CREATE_ITEM = 1;
     protected static String logger = OverviewActivity.class.getSimpleName();
 
     private TextView helloText;
@@ -223,22 +225,48 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
         Intent detailviewIntent = new Intent(this, DetailviewActivity.class);
         detailviewIntent.putExtra(TODO_ITEM, item);
 
-        startActivity(detailviewIntent);
+        startActivityForResult(detailviewIntent, EDIT_ITEM);
     }
 
     private void addNewItem() {
         Intent addNewItemIntent = new Intent(this, DetailviewActivity.class);
 
-        startActivityForResult(addNewItemIntent, 1);
+        startActivityForResult(addNewItemIntent, CREATE_ITEM);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
+
+        Log.i(logger,"onActivityResult(): " + requestCode + ", " + resultCode + ": " + data);
+
+
+        if (requestCode == CREATE_ITEM && resultCode == Activity.RESULT_OK) {
             ToDo item = (ToDo) data.getSerializableExtra(TODO_ITEM);
-            //addItemToListView(item);
             createAndShowItem(item);
         }
+        else if (requestCode == EDIT_ITEM) {
+            if (resultCode == DetailviewActivity.RESULT_DELETE_ITEM) {
+                ToDo item = (ToDo) data.getSerializableExtra(TODO_ITEM);
+                deleteAndRemoveItem(item);
+            }
+        }
+    }
+
+    private void deleteAndRemoveItem(ToDo item) {
+
+        boolean deleted = crudOperations.deleteToDo(item.getId());
+        if (deleted) {
+            listViewAdapter.remove(findDataItemInList(item.getId()));
+        }
+    }
+
+    private ToDo findDataItemInList(long id) {
+        for (int i=0;i<listViewAdapter.getCount();i++) {
+            if (listViewAdapter.getItem(i).getId() == id) {
+                return listViewAdapter.getItem(i);
+            }
+        }
+        return null;
     }
 
     @Override
