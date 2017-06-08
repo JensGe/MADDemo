@@ -1,5 +1,7 @@
 package de.honzont.jensge.maddemo.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 
 /**
@@ -9,10 +11,11 @@ import java.io.Serializable;
 public class ToDo implements Serializable{
 
     private String name;
+
+    @SerializedName("expiry")
     private long dueDate;
+
     private long id;
-    private boolean favourite;
-    private boolean done;
 
     public ToDo() {
     }

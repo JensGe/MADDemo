@@ -21,6 +21,7 @@ public class DetailviewActivity extends AppCompatActivity {
 
     public static final String TODO_ITEM = "toDoItem";
     public static final int RESULT_DELETE_ITEM = 10 ;
+    protected static String logger = DetailviewActivity.class.getSimpleName();
 
     private TextView itemNameText;
     private Button saveItemButton;
@@ -60,8 +61,9 @@ public class DetailviewActivity extends AppCompatActivity {
         String itemName = itemNameText.getText().toString();
         ToDo item = new ToDo(itemName);
         returnIntent.putExtra(TODO_ITEM, item);
-
+        Log.i(logger,"Creating item " + item);
         setResult(Activity.RESULT_OK, returnIntent);
+        Log.i(logger,"returnintent: " + returnIntent);
         finish();
     }
 

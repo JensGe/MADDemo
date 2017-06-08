@@ -14,14 +14,12 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.util.Arrays;
 import java.util.List;
 
 import de.honzont.jensge.maddemo.model.IToDoCRUDItemOperations;
-import de.honzont.jensge.maddemo.model.LocalToDoCRUDOperations;
-import de.honzont.jensge.maddemo.model.SimpleToDoCRUDOperationsImpl;
+import de.honzont.jensge.maddemo.model.LocalToDoCRUDOperationsImpl;
+import de.honzont.jensge.maddemo.model.RemoteToDoCRUDOperationsImpl;
 import de.honzont.jensge.maddemo.model.ToDo;
 
 import static de.honzont.jensge.maddemo.DetailviewActivity.TODO_ITEM;
@@ -99,7 +97,7 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
 
                 ItemViewHolder viewHolder = (ItemViewHolder) itemView.getTag();
                 ToDo item = getItem(position);
-                //Log.i(logger,"creating view for position " + position + " and item " + item);
+                Log.i(logger,"creating view for position " + position + " and item " + item);
 
                 viewHolder.itemNameView.setText(item.getName());
 
@@ -118,7 +116,9 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
                 showDetailviewForItemName(selectedItem);
             }
         });
-        crudOperations = /*new SimpleToDoCRUDOperationsImpl()*/ new LocalToDoCRUDOperations(this);
+        /* crudOperations = new SimpleToDoCRUDOperationsImpl();*/
+        /* crudOperations = new LocalToDoCRUDOperationsImpl(this); */
+        crudOperations = new RemoteToDoCRUDOperationsImpl();
 
         readItemsAndFillListView();
     }
