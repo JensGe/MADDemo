@@ -3,7 +3,6 @@ package de.honzont.jensge.maddemo;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,9 +16,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import de.honzont.jensge.maddemo.model.IToDoCRUDItemOperations;
-import de.honzont.jensge.maddemo.model.LocalToDoCRUDOperationsImpl;
-import de.honzont.jensge.maddemo.model.RemoteToDoCRUDOperationsImpl;
+import de.honzont.jensge.maddemo.model.IToDoCRUDOperationsASync;
 import de.honzont.jensge.maddemo.model.ToDo;
 
 import static de.honzont.jensge.maddemo.DetailviewActivity.TODO_ITEM;
@@ -36,7 +33,7 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
     private ArrayAdapter<ToDo> listViewAdapter;
 
     private ProgressDialog progressDialog;
-    private IToDoCRUDItemOperations crudOperations;
+    private IToDoCRUDOperationsASync crudOperations;
 
     private class ItemViewHolder {
         public TextView itemNameView;
@@ -116,87 +113,38 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
                 showDetailviewForItemName(selectedItem);
             }
         });
-        /* crudOperations = new SimpleToDoCRUDOperationsImpl();*/
-        /* crudOperations = new LocalToDoCRUDOperationsImpl(this); */
-        crudOperations = new RemoteToDoCRUDOperationsImpl();
+
+        crudOperations = ((ToDoApplication)getApplication()).getCRUDOperationsImpl();
 
         readItemsAndFillListView();
     }
 
     private void readItemsAndFillListView() {
 
+        progressDialog.show();
 
-//        List<ToDo> items = crudOperations.readAllToDos();
-//
-//        for (ToDo item : items) {
-//            addItemToListView(item);
-//        }
-
-        new AsyncTask<Void, Void, List<ToDo>>() {
-
+        crudOperations.readAllToDos(new IToDoCRUDOperationsASync.CallbackFunction<List<ToDo>>() {
             @Override
-            protected void onPreExecute() {
-                progressDialog.setMessage("Loading ToDo Items");
-                progressDialog.show();
-            }
-
-            @Override
-            protected List<ToDo> doInBackground(Void... params) {
-                return crudOperations.readAllToDos();
-            }
-
-            @Override
-            protected void onPostExecute(List<ToDo> toDos) {
+            public void process(List<ToDo> result) {
                 progressDialog.hide();
-                for (ToDo item : toDos) {
+                for (ToDo item : result) {
                     addItemToListView(item);
-                }
             }
-        }.execute();
-
-
+        }
     }
+
 
     private void createAndShowItem(/*final*/ ToDo item) {
 
-       /* progressDialog.show();
+        progressDialog.show();
 
-        new Thread(new Runnable() {
+        crudOperations.createToDo(item, new IToDoCRUDOperationsASync.CallbackFunction<ToDo>() {
             @Override
-            public void run() {
-                ToDo createdItem = crudOperations.createToDo(item);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        addItemToListView(item);
-                        progressDialog.hide();
-                    }
-                });
-
-
-            }
-        }).start();*/
-
-        new AsyncTask<ToDo, Void, ToDo>() {
-
-            @Override
-            protected void onPreExecute() {
-                progressDialog.setMessage("Creating ToDo Item");
-                progressDialog.show();
-            }
-
-            @Override
-            protected ToDo doInBackground(ToDo... params) {
-                ToDo createdItem = crudOperations.createToDo(params[0]);
-                return createdItem;
-            }
-
-            @Override
-            protected void onPostExecute(ToDo item) {
-                addItemToListView(item);
+            public void process(ToDo result) {
+                addItemToListView(result);
                 progressDialog.hide();
             }
-        }.execute(item);
+        });
 
     }
 
@@ -254,10 +202,23 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
 
     private void deleteAndRemoveItem(ToDo item) {
 
-        boolean deleted = crudOperations.deleteToDo(item.getId());
-        if (deleted) {
-            listViewAdapter.remove(findDataItemInList(item.getId()));
-        }
+//        boolean deleted = crudOperations.deleteToDo(item.getId());
+//        if (deleted) {
+//            listViewAdapter.remove(findDataItemInList(item.getId()));
+//        }
+
+        crudOperations.deleteToDo(item.getId(), new IToDoCRUDOperationsASync.CallbackFunction<Boolean>() {
+            @Override
+            public void process(Boolean result) {
+                if (deleted) {
+                    listViewAdapter.remove(findDataItemInList(item.getId()));
+                }
+            }
+
+
+        });
+
+
     }
 
     private ToDo findDataItemInList(long id) {

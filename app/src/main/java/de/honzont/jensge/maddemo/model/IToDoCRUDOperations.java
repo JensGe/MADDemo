@@ -6,7 +6,7 @@ import java.util.List;
  * Created by Jens on 17.05.2017.
  */
 
-public interface IToDoCRUDItemOperations {
+public interface IToDoCRUDOperations {
 
     // Create
     public ToDo createToDo(ToDo item);

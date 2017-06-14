@@ -7,7 +7,7 @@ import java.util.List;
  * Created by Jens on 17.05.2017.
  */
 
-public class SimpleToDoCRUDOperationsImpl implements IToDoCRUDItemOperations {
+public class SimpleToDoCRUDOperationsImpl implements IToDoCRUDOperations {
 
 
     @Override

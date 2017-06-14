@@ -19,7 +19,7 @@ import retrofit2.http.Path;
  * Created by Gäbeler on 08.06.2017.
  */
 
-public class RemoteToDoCRUDOperationsImpl implements IToDoCRUDItemOperations {
+public class RemoteToDoCRUDOperationsImpl implements IToDoCRUDOperations {
 
     public interface IToDoCRUDWebAPI {
 

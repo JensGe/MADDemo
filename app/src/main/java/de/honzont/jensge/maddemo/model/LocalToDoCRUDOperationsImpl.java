@@ -12,7 +12,7 @@ import java.util.List;
  * Created by Gäbeler on 25.05.2017.
  */
 
-public class LocalToDoCRUDOperationsImpl implements IToDoCRUDItemOperations {
+public class LocalToDoCRUDOperationsImpl implements IToDoCRUDOperations {
 
     protected static String logger = LocalToDoCRUDOperationsImpl.class.getSimpleName();
 
