@@ -5,4 +5,6 @@
     <string name="title_detailview">Detailview</string>
     <string name="itemName_hint">New ToDo</string>
     <string name="itemDescription_hint">Describe your ToDo</string>
+    <string name="done">Done</string>
+    <string name="favourite">Favourite</string>
 </resources>

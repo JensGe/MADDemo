@@ -10,14 +10,25 @@ import java.io.Serializable;
 
 public class ToDo implements Serializable{
 
+    private long id;
     private String name;
+    private String description;
 
     @SerializedName("expiry")
     private long dueDate;
 
-    private long id;
+    private boolean done;
+    private boolean favourite;
 
     public ToDo() {
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public ToDo(String name) {
@@ -40,12 +51,28 @@ public class ToDo implements Serializable{
         this.dueDate = dueDate;
     }
 
-    public long getId() {
-        return id;
+    public String getDescription() {
+        return description;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public boolean isDone() {
+        return done;
+    }
+
+    public void setDone(boolean done) {
+        this.done = done;
+    }
+
+    public boolean isFavourite() {
+        return favourite;
+    }
+
+    public void setFavourite(boolean favourite) {
+        this.favourite = favourite;
     }
 
     @Override
