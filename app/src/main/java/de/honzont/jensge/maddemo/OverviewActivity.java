@@ -131,19 +131,6 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
 
 }
 
-    private void createAndShowItem(/*final*/ ToDo item) {
-
-        progressDialog.show();
-
-        crudOperations.createToDo(item, new IToDoCRUDOperationsASync.CallbackFunction<ToDo>() {
-            @Override
-            public void process(ToDo result) {
-                addItemToListView(result);
-                progressDialog.hide();
-            }
-        });
-
-    }
 
     private void addItemToListView(ToDo item) {
 
@@ -179,7 +166,25 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
                 ToDo item = (ToDo) data.getSerializableExtra(TODO_ITEM);
                 deleteAndRemoveItem(item);
             }
+            else if (resultCode == DetailviewActivity.RESULT_UPDATE_ITEM) {
+                ToDo item = (ToDo) data.getSerializableExtra(TODO_ITEM);
+                updateItem(item);
+            }
         }
+    }
+
+    private void createAndShowItem(/*final*/ ToDo item) {
+
+        progressDialog.show();
+
+        crudOperations.createToDo(item, new IToDoCRUDOperationsASync.CallbackFunction<ToDo>() {
+            @Override
+            public void process(ToDo result) {
+                addItemToListView(result);
+                progressDialog.hide();
+            }
+        });
+
     }
 
     private void deleteAndRemoveItem(final ToDo item) {
@@ -193,8 +198,24 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
 
                 }
             });
-
     }
+
+    private void updateItem(final ToDo item) {
+
+        progressDialog.show();
+
+        crudOperations.updateToDo(item.getId(), item, new IToDoCRUDOperationsASync.CallbackFunction<ToDo>() {
+            @Override
+            public void process(ToDo result) {
+
+                progressDialog.hide();
+
+            }
+        });
+    }
+
+
+
 
     private ToDo findDataItemInList(long id) {
         for (int i=0;i<listViewAdapter.getCount();i++) {
