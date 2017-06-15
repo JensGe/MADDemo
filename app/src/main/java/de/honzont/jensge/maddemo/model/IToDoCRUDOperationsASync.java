@@ -18,7 +18,7 @@ public interface IToDoCRUDOperationsASync {
     public void createToDo(ToDo item, CallbackFunction<ToDo> callback);
 
     // Read (All)
-    public void readAllToDos(CallbackFunction<ToDo> callback);
+    public void readAllToDos(CallbackFunction<List<ToDo>> callback);
 
     // Read (Single)
     public void readToDo(long id, CallbackFunction<ToDo> callback);

@@ -35,11 +35,6 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
     private ProgressDialog progressDialog;
     private IToDoCRUDOperationsASync crudOperations;
 
-    private class ItemViewHolder {
-        public TextView itemNameView;
-    }
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,10 +124,12 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
                 progressDialog.hide();
                 for (ToDo item : result) {
                     addItemToListView(item);
-            }
-        }
-    }
+                }
 
+            }
+    });
+
+}
 
     private void createAndShowItem(/*final*/ ToDo item) {
 
@@ -151,22 +148,7 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
     private void addItemToListView(ToDo item) {
 
         listViewAdapter.add(item);
-/*        View listItemView = getLayoutInflater().inflate(R.layout.itemview_overview, null);
-        TextView itemNameView = (TextView)listItemView.findViewById(R.id.itemName);
 
-        listItemView.setTag(item);
-        itemNameView.setText(item.getName());
-
-        listItemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ToDo item = (ToDo) v.getTag();
-                showDetailviewForItemName(item);
-
-            }
-        });
-
-        listView.addView(listItemView); */
     }
 
     private void showDetailviewForItemName(ToDo item) {
@@ -200,24 +182,17 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    private void deleteAndRemoveItem(ToDo item) {
-
-//        boolean deleted = crudOperations.deleteToDo(item.getId());
-//        if (deleted) {
-//            listViewAdapter.remove(findDataItemInList(item.getId()));
-//        }
+    private void deleteAndRemoveItem(final ToDo item) {
 
         crudOperations.deleteToDo(item.getId(), new IToDoCRUDOperationsASync.CallbackFunction<Boolean>() {
             @Override
-            public void process(Boolean result) {
+            public void process(Boolean deleted) {
                 if (deleted) {
                     listViewAdapter.remove(findDataItemInList(item.getId()));
                 }
-            }
 
-
-        });
-
+                }
+            });
 
     }
 
@@ -243,5 +218,9 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
     protected void onDestroy() {
         super.onDestroy();
         /****/
+    }
+
+    private class ItemViewHolder {
+        public TextView itemNameView;
     }
 }

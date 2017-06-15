@@ -24,6 +24,7 @@ public class ToDoApplication extends Application implements IToDoCRUDOperationsA
     @Override
     public void onCreate() {
         Log.i(logger,"onCreate()");
+
     }
 
     public IToDoCRUDOperationsASync getCRUDOperationsImpl() {
@@ -50,7 +51,7 @@ public class ToDoApplication extends Application implements IToDoCRUDOperationsA
     }
 
     @Override
-    public void readAllToDos(final CallbackFunction<ToDo> callback) {
+    public void readAllToDos(final CallbackFunction<List<ToDo>> callback) {
 
         new AsyncTask<Void,Void,List<ToDo>>() {
 
