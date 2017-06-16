@@ -1,14 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:weightSum="1">
 
     <EditText
         android:id="@+id/itemName"
         android:hint="@string/itemName_hint"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+
+    <EditText
+        android:id="@+id/itemDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/itemDescription_hint" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!--<CheckBox-->
+            <!--android:id="@+id/itemFavourite"-->
+            <!--android:layout_marginRight="50dp"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="@string/favourite" />-->
+
+        <Button
+            android:id="@+id/itemFavouriteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="50dp"
+            android:background="@android:color/transparent"
+            android:drawableTop="@drawable/star_outline_black_36"/>
+
+        <Button
+            android:id="@+id/itemDone"
+            android:drawableTop="@drawable/checkbox_empty_black_36"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent" />
+
+
+
+
+    </LinearLayout>
+
+
 
     <Button
         android:visibility="gone"
