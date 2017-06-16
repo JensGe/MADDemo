@@ -1,57 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
-    android:weightSum="1">
+    android:weightSum="1"
+    android:baselineAligned="false">
+
+    <ToggleButton
+        android:id="@+id/toggle_favButton"
+        style="@style/toggleButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="right"
+        android:background="@drawable/ic_toggle_fav_bg"
+        android:layout_alignBottom="@+id/itemName"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <ToggleButton
+        android:visibility="gone"
+        android:id="@+id/toggle_doneButton"
+        style="@style/toggleButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/ic_toggle_done_bg"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <EditText
         android:id="@+id/itemName"
-        android:hint="@string/itemName_hint"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:hint="@string/itemName_hint"
+        android:inputType="textCapWords"
+        android:textSize="24sp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_toLeftOf="@+id/toggle_favButton"
+        android:layout_toStartOf="@+id/toggle_favButton" />
 
     <EditText
         android:id="@+id/itemDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/itemDescription_hint" />
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <!--<CheckBox-->
-            <!--android:id="@+id/itemFavourite"-->
-            <!--android:layout_marginRight="50dp"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="@string/favourite" />-->
-
-        <Button
-            android:id="@+id/itemFavouriteButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="50dp"
-            android:background="@android:color/transparent"
-            android:drawableTop="@drawable/star_outline_black_36"/>
-
-        <Button
-            android:id="@+id/itemDone"
-            android:drawableTop="@drawable/checkbox_empty_black_36"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent" />
-
-
-
-
-    </LinearLayout>
-
-
+        android:hint="@string/itemDescription_hint"
+        android:inputType="textMultiLine"
+        android:layout_marginTop="17dp"
+        android:layout_below="@+id/time_pick_button"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <Button
         android:visibility="gone"
@@ -59,4 +60,52 @@
         android:id="@+id/saveItem"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
-</LinearLayout>
+
+    <TextView
+        android:id="@+id/itemDueDate"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/duedate_hint"
+        android:textSize="18sp"
+        android:layout_alignBaseline="@+id/date_pick_button"
+        android:layout_alignBottom="@+id/date_pick_button"
+        android:layout_toRightOf="@+id/date_pick_button"
+        android:layout_toEndOf="@+id/date_pick_button" />
+
+    <Button
+        android:id="@+id/date_pick_button"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@drawable/calendar_black_24"
+        android:src="@drawable/calendar_black_24"
+        android:layout_below="@+id/toggle_favButton"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="14dp" />
+
+    <TextView
+        android:id="@+id/itemDueTime"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/duetime_hint"
+        android:textSize="18sp"
+        android:layout_marginLeft="14dp"
+        android:layout_marginStart="14dp"
+        android:layout_alignTop="@+id/time_pick_button"
+        android:layout_toRightOf="@+id/time_pick_button"
+        android:layout_toEndOf="@+id/time_pick_button" />
+
+    <Button
+        android:id="@+id/time_pick_button"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@drawable/calendar_clock_black_24"
+        android:src="@drawable/calendar_clock_black_24"
+        android:layout_alignTop="@+id/itemDueDate"
+        android:layout_toRightOf="@+id/itemDueDate"
+        android:layout_toEndOf="@+id/itemDueDate"
+        android:layout_marginLeft="14dp"
+        android:layout_marginStart="14dp" />
+
+
+</RelativeLayout>

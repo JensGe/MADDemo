@@ -23,6 +23,17 @@ public class ToDo implements Serializable{
     public ToDo() {
     }
 
+    public ToDo(String name) {
+        this.name = name;
+    }
+    public ToDo(String name, String description, long dueDate, boolean favourite, boolean done) {
+        this.name = name;
+        this.description = description;
+        this.dueDate = dueDate;
+        this.favourite = favourite;
+        this.done = done;
+    }
+
     public long getId() {
         return id;
     }
@@ -31,9 +42,6 @@ public class ToDo implements Serializable{
         this.id = id;
     }
 
-    public ToDo(String name) {
-        this.name = name;
-    }
 
     public String getName() {
         return name;
@@ -81,6 +89,9 @@ public class ToDo implements Serializable{
                 "name='" + name + '\'' +
                 ", dueDate=" + dueDate +
                 ", id=" + id +
+                ", description=" + description +
+                ", favourite=" + favourite +
+                ", done=" + done +
                 '}';
     }
 }

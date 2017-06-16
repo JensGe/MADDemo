@@ -85,7 +85,7 @@ public class RemoteToDoCRUDOperationsImpl implements IToDoCRUDOperations {
             Log.i("RemoteToDoCRUDOpImpl", "Update item: " + item);
             ToDo updated;
             updated = this.webAPI.updateToDo(id, item).execute().body();
-            Log.i("ReomoteToDoCRUDOpImpl", "Updated ToDo: " + updated);
+            Log.i("RemoteToDoCRUDOpImpl", "Updated ToDo: " + updated);
             return updated;
         } catch (IOException e) {
             e.printStackTrace();

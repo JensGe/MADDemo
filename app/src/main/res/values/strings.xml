@@ -5,7 +5,6 @@
     <string name="title_detailview">Detailview</string>
     <string name="itemName_hint">New ToDo</string>
     <string name="itemDescription_hint">Describe your ToDo</string>
-    <string name="done">Mark Done</string>
-    <string name="undone">unMark Done</string>
-    <string name="favourite">Favourite</string>
+    <string name="duedate_hint">Due Date</string>
+    <string name="duetime_hint">Due Time</string>
 </resources>
