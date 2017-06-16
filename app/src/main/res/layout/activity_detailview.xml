@@ -63,14 +63,15 @@
 
     <TextView
         android:id="@+id/itemDueDate"
-        android:layout_width="130dp"
+        android:layout_width="120dp"
         android:layout_height="wrap_content"
-        android:hint="@string/duedate_hint"
-        android:textSize="18sp"
         android:layout_alignBaseline="@+id/date_pick_button"
         android:layout_alignBottom="@+id/date_pick_button"
+        android:layout_marginLeft="22dp"
+        android:layout_marginStart="22dp"
         android:layout_toRightOf="@+id/date_pick_button"
-        android:layout_toEndOf="@+id/date_pick_button" />
+        android:hint="@string/duedate_hint"
+        android:textSize="18sp" />
 
     <Button
         android:id="@+id/date_pick_button"
@@ -85,15 +86,15 @@
 
     <TextView
         android:id="@+id/itemDueTime"
-        android:layout_width="130dp"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:hint="@string/duetime_hint"
-        android:textSize="18sp"
+        android:layout_alignTop="@+id/time_pick_button"
         android:layout_marginLeft="14dp"
         android:layout_marginStart="14dp"
-        android:layout_alignTop="@+id/time_pick_button"
+        android:layout_toEndOf="@+id/time_pick_button"
         android:layout_toRightOf="@+id/time_pick_button"
-        android:layout_toEndOf="@+id/time_pick_button" />
+        android:hint="@string/duetime_hint"
+        android:textSize="18sp" />
 
     <Button
         android:id="@+id/time_pick_button"

@@ -79,11 +79,14 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
                     itemView = getLayoutInflater().inflate(R.layout.itemview_overview, null);
                     // read out the text view for the item name
                     TextView itemNameView = (TextView) itemView.findViewById(R.id.itemName);
+//                    TextView itemDescriptionView = (TextView) itemView.findViewById(R.id.itemDescription);
+
                     // create a new instance of the view holder
                     ItemViewHolder itemViewHolder = new ItemViewHolder();
                     //set the itemNameView attribut on view holder to text view
                     itemViewHolder.itemNameView = itemNameView;
-                    // set thte view holder on the list item view
+//                    itemViewHolder.itemDescriptionView = itemDescriptionView;
+                    // set the view holder on the list item view
                     itemView.setTag(itemViewHolder);
                 }
 
@@ -92,6 +95,7 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
                 Log.i(logger,"creating view for position " + position + " and item " + item);
 
                 viewHolder.itemNameView.setText(item.getName());
+//                viewHolder.itemDescriptionView.setText(item.getDescription());
 
                 return itemView;
             }
@@ -243,5 +247,6 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
 
     private class ItemViewHolder {
         public TextView itemNameView;
+//        public TextView itemDescriptionView;
     }
 }

@@ -6,6 +6,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +18,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.ToggleButton;
 
 import java.util.Calendar;
@@ -28,24 +30,24 @@ import de.honzont.jensge.maddemo.model.ToDo;
  */
 
 
-public class DetailviewActivity extends AppCompatActivity {
+public class DetailviewActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static final String TODO_ITEM = "toDoItem";
     public static final int RESULT_DELETE_ITEM = 10 ;
     public static final int RESULT_UPDATE_ITEM = 25;
     protected static String logger = DetailviewActivity.class.getSimpleName();
 
-    private TextView itemNameText;
-    private TextView itemDescriptionText;
-    private ToggleButton favouriteToggle;
-    private ToggleButton doneToggle;
+    private TextView itemNameText, itemDescriptionText;
     private Long dateTime;
-    private TextView itemDueDateDate;
-    private TextView itemDueTime;
-    private Button datePickButton;
-    private Button timePickButton;
+
+    private TextView itemDueDateDate, itemDueTime;
+    private Button datePickButton, timePickButton;
+
+    private ToggleButton favouriteToggle, doneToggle;
+
     private Button saveItemButton;
 
+    private int  dateYear, dateMonth, dateDay, timeHour, timeMinute;
     private ToDo item;
 
     @Override
@@ -58,10 +60,13 @@ public class DetailviewActivity extends AppCompatActivity {
         // read out ui elements
         itemNameText = (TextView)findViewById(R.id.itemName);
         itemDescriptionText = (TextView)findViewById(R.id.itemDescription);
+
         itemDueDateDate = (TextView)findViewById(R.id.itemDueDate);
         itemDueTime = (TextView)findViewById(R.id.itemDueTime);
+
         datePickButton = (Button) findViewById(R.id.date_pick_button);
         timePickButton = (Button) findViewById(R.id.time_pick_button);
+
         favouriteToggle = (ToggleButton)findViewById(R.id.toggle_favButton);
         doneToggle = (ToggleButton)findViewById(R.id.toggle_doneButton);
 
@@ -87,26 +92,51 @@ public class DetailviewActivity extends AppCompatActivity {
             }
         });
 
-        datePickButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i(logger, "DatePicker Clicked");
-                // Show Dialog DateDialogID
-                DialogFragment newDateFragment = new DatePickerFragment();
-                newDateFragment.show(getFragmentManager(), "datepicker");
-            }
-        });
 
-        timePickButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i(logger, "TimePicker Clicked");
-                // Show Dialog DateDialogID
-                DialogFragment newTimeFragment = new TimePickerFragment();
-                newTimeFragment.show(getFragmentManager(), "timepicker");
-            }
-        });
+        datePickButton.setOnClickListener(this);
+        itemDueDateDate.setOnClickListener(this);
+        timePickButton.setOnClickListener(this);
+        itemDueTime.setOnClickListener(this);
+    }
 
+    @Override
+    public void onClick(View v) {
+        if (v == datePickButton || v == itemDueDateDate) {
+            final Calendar c = Calendar.getInstance();
+            dateYear = c.get(Calendar.YEAR);
+            dateMonth = c.get(Calendar.MONTH);
+            dateDay = c.get(Calendar.DAY_OF_MONTH);
+
+            DatePickerDialog dpd = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                    String m = "";
+                    String d = "";
+                    if (monthOfYear +1 < 10) m = "0";
+                    if (dayOfMonth < 10) d = "0";
+                    itemDueDateDate.setText(d + dayOfMonth + ". " + m + (monthOfYear + 1) + ". " + year);
+                }
+            }, dateYear, dateMonth, dateDay);
+            dpd.show();
+        }
+
+        if (v == timePickButton || v == itemDueTime) {
+            final Calendar c = Calendar.getInstance();
+            timeHour = c.get(Calendar.HOUR_OF_DAY);
+            timeMinute = c.get(Calendar.MINUTE);
+
+            TimePickerDialog tpd = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
+                @Override
+                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                    String m = "";
+                    String h = "";
+                    if (minute < 10) m = "0";
+                    if (hourOfDay < 10) h = "0";
+                    itemDueTime.setText(h + hourOfDay + ":" + m + minute);
+                }
+            }, timeHour,timeMinute, true);
+            tpd.show();
+        }
     }
 
     private void saveItem() {
@@ -155,43 +185,4 @@ public class DetailviewActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public class DatePickerFragment extends DialogFragment
-            implements DatePickerDialog.OnDateSetListener {
-
-        public EditText editText;
-        DatePicker dpResult;
-
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            final Calendar c = Calendar.getInstance();
-            int year = c.get(Calendar.YEAR);
-            int month = c.get(Calendar.MONTH);
-            int day = c.get(Calendar.DAY_OF_MONTH);
-            return new DatePickerDialog(getActivity(), this, year, month, day);
-        }
-
-        public void onDateSet(DatePicker view, int year, int month, int day) {
-
-            itemDueDateDate.setText(String.valueOf(day) + ". " + String.valueOf(month+1) + ". " + String.valueOf(year));
-        }
-    }
-
-    public class TimePickerFragment extends DialogFragment
-            implements DatePickerDialog.OnDateSetListener {
-
-        public EditText editText;
-        DatePicker dpResult;
-
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            final Calendar c = Calendar.getInstance();
-            int year = c.get(Calendar.YEAR);
-            int month = c.get(Calendar.MONTH);
-            int day = c.get(Calendar.DAY_OF_MONTH);
-            return new DatePickerDialog(getActivity(), this, year, month, day);
-        }
-
-        public void onDateSet(DatePicker view, int year, int month, int day) {
-
-            itemDueDateDate.setText(String.valueOf(day) + ". " + String.valueOf(month+1) + ". " + String.valueOf(year));
-        }
-    }
 }
