@@ -13,22 +13,41 @@
         android:layout_height="wrap_content"
         android:text="lorem"
         android:textSize="20sp"
-        android:layout_alignRight="@+id/itemDescription"
-        android:layout_alignEnd="@+id/itemDescription"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
-    <!--<TextView-->
-        <!--android:id="@+id/itemDescription"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="lorem ipsum lirum larum löffelstiel ... "-->
-        <!--android:textSize="12sp"-->
-        <!--android:layout_below="@+id/itemName"-->
-        <!--android:layout_alignParentLeft="true"-->
-        <!--android:layout_alignParentStart="true" />-->
+    <TextView
+        android:id="@+id/itemDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="lorem ipsum lirum larum löffelstiel ... "
+        android:textSize="12sp"
+        android:layout_alignBaseline="@+id/itemDueDate"
+        android:layout_alignBottom="@+id/itemDueDate"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:id="@+id/itemDueDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:text="21.05 2017"
+        android:layout_below="@+id/itemDone"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <CheckBox
+        android:focusable="false" android:id="@+id/itemDone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/itemName"
+        android:layout_alignBottom="@+id/itemName"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
 
+    <!-- Name, DueDate, Done, Fav -->
     <!-- Checkbox implementation mit ArrayAdapter und anonymen inneren Klassen:
             Siehe: http://moodle.oncampus.de/modules/ir373/onmod/MADDAZ/mvc/adapter.shtml -->
 </RelativeLayout>

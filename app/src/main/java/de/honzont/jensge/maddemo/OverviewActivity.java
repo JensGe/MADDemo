@@ -11,10 +11,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import de.honzont.jensge.maddemo.model.IToDoCRUDOperationsASync;
 import de.honzont.jensge.maddemo.model.ToDo;
@@ -79,23 +84,43 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
                     itemView = getLayoutInflater().inflate(R.layout.itemview_overview, null);
                     // read out the text view for the item name
                     TextView itemNameView = (TextView) itemView.findViewById(R.id.itemName);
-//                    TextView itemDescriptionView = (TextView) itemView.findViewById(R.id.itemDescription);
+                    TextView itemDescriptionView = (TextView) itemView.findViewById(R.id.itemDescription);
+                    CheckBox itemDoneView = (CheckBox) itemView.findViewById(R.id.itemDone);
+                    TextView itemDueDateView = (TextView) itemView.findViewById(R.id.itemDueDate);
 
                     // create a new instance of the view holder
                     ItemViewHolder itemViewHolder = new ItemViewHolder();
                     //set the itemNameView attribut on view holder to text view
                     itemViewHolder.itemNameView = itemNameView;
-//                    itemViewHolder.itemDescriptionView = itemDescriptionView;
+                    itemViewHolder.itemDescriptionView = itemDescriptionView;
+                    itemViewHolder.itemDoneView = itemDoneView;
+                    itemViewHolder.itemDueDateView = itemDueDateView;
+
                     // set the view holder on the list item view
                     itemView.setTag(itemViewHolder);
                 }
 
                 ItemViewHolder viewHolder = (ItemViewHolder) itemView.getTag();
-                ToDo item = getItem(position);
+                final ToDo item = getItem(position);
                 Log.i(logger,"creating view for position " + position + " and item " + item);
 
+                String descriptionSubstring;
+                if (item.getDescription().length() > 20) {
+                    descriptionSubstring = item.getDescription().substring(0,17) + "...";
+                } else { descriptionSubstring = item.getDescription(); }
+
                 viewHolder.itemNameView.setText(item.getName());
-//                viewHolder.itemDescriptionView.setText(item.getDescription());
+                viewHolder.itemDescriptionView.setText(descriptionSubstring);
+                viewHolder.itemDoneView.setChecked(item.isDone());
+                viewHolder.itemDueDateView.setText(new SimpleDateFormat("dd. MM. yyyy", Locale.GERMANY).format(new Date(item.getDueDate())));
+
+                viewHolder.itemDoneView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        item.setDone(isChecked);
+                        Log.i(logger, "Check set: " + isChecked);
+                    }
+                });
 
                 return itemView;
             }
@@ -119,9 +144,7 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void readItemsAndFillListView() {
-
         progressDialog.show();
-
         crudOperations.readAllToDos(new IToDoCRUDOperationsASync.CallbackFunction<List<ToDo>>() {
             @Override
             public void process(List<ToDo> result) {
@@ -129,23 +152,17 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
                 for (ToDo item : result) {
                     addItemToListView(item);
                 }
-
             }
     });
-
 }
 
 
-    private void addItemToListView(ToDo item) {
 
-        listViewAdapter.add(item);
-
-    }
 
     private void showDetailviewForItemName(ToDo item) {
         Intent detailviewIntent = new Intent(this, DetailviewActivity.class);
-        detailviewIntent.putExtra(TODO_ITEM, item);
 
+        detailviewIntent.putExtra(TODO_ITEM, item);
         startActivityForResult(detailviewIntent, EDIT_ITEM);
     }
 
@@ -191,6 +208,10 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
+    private void addItemToListView(ToDo item) {
+        listViewAdapter.add(item);
+    }
+
     private void deleteAndRemoveItem(final ToDo item) {
 
         crudOperations.deleteToDo(item.getId(), new IToDoCRUDOperationsASync.CallbackFunction<Boolean>() {
@@ -211,7 +232,8 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
         crudOperations.updateToDo(item.getId(), item, new IToDoCRUDOperationsASync.CallbackFunction<ToDo>() {
             @Override
             public void process(ToDo result) {
-
+                listViewAdapter.remove(findDataItemInList(item.getId()));
+                listViewAdapter.add(item);
                 progressDialog.hide();
 
             }
@@ -247,6 +269,8 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
 
     private class ItemViewHolder {
         public TextView itemNameView;
-//        public TextView itemDescriptionView;
+        public TextView itemDescriptionView;
+        public CheckBox itemDoneView;
+        public TextView itemDueDateView;
     }
 }

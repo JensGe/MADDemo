@@ -74,8 +74,19 @@ public class ToDoApplication extends Application implements IToDoCRUDOperationsA
     }
 
     @Override
-    public void updateToDo(long id, ToDo item, CallbackFunction<ToDo> callback) {
+    public void updateToDo(final long id, final ToDo item, final CallbackFunction<ToDo> callback) {
+        new AsyncTask<Long,Void,ToDo>() {
 
+            @Override
+            protected ToDo doInBackground(Long... params) {
+                return syncCrudOperations.updateToDo(id, item);
+            }
+            @Override
+            protected void onPostExecute(ToDo toDo) {
+                callback.process(toDo);
+            }
+
+        }.execute(id);
     }
 
     @Override

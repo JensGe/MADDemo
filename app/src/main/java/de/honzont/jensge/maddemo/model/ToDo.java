@@ -33,6 +33,14 @@ public class ToDo implements Serializable{
         this.favourite = favourite;
         this.done = done;
     }
+    public ToDo(long id, String name, String description, long dueDate, boolean favourite, boolean done) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.dueDate = dueDate;
+        this.favourite = favourite;
+        this.done = done;
+    }
 
     public long getId() {
         return id;
