@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MADDemo</string>
+    <string name="duedate_hint">Fälligkeitsdatum</string>
+    <string name="duetime_hint">Fälligkeitszeitpunkt</string>
+    <string name="itemDescription_hint">Beschreibung des ToDos</string>
+    <string name="itemName_hint">Neues ToDo</string>
+    <string name="sort_alphabetically">Sortieren nach Alphabet</string>
+    <string name="sort_by_date">Sortieren nach Datum</string>
+    <string name="sort_by_importance">Sortieren nach Wichtigkeit</string>
+    <string name="title_detailview">Detailansicht</string>
+    <string name="title_overview">Übersichtsansicht</string>
+    <string name="app_content">Hallo Android!</string>
+    <string name="filterdone">Fertige ausblenden</string>
+    <string name="filterunimportant">Unwichtige ausblenden</string>
+    <string name="unfilter">Filterung entfernen</string>
+    <string name="contacts">Contacts</string>
+</resources>

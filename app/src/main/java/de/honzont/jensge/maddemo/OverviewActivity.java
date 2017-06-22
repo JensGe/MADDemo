@@ -7,6 +7,8 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -17,6 +19,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -36,6 +41,7 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
     private ViewGroup listView;
     private View addItemAction;
     private ArrayAdapter<ToDo> listViewAdapter;
+    private List<ToDo> itemsList = new ArrayList<ToDo>();
 
     private ProgressDialog progressDialog;
     private IToDoCRUDOperationsASync crudOperations;
@@ -71,7 +77,7 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
         });
 
         // instantiate listview with adapter
-        listViewAdapter = new ArrayAdapter<ToDo>(this, R.layout.itemview_overview) {
+        listViewAdapter = new ArrayAdapter<ToDo>(this, R.layout.itemview_overview, itemsList) {
             @NonNull
             @Override
             public View getView(int position, View itemView, ViewGroup parent) {
@@ -102,12 +108,14 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
 
                 ItemViewHolder viewHolder = (ItemViewHolder) itemView.getTag();
                 final ToDo item = getItem(position);
-                Log.i(logger,"creating view for position " + position + " and item " + item);
+                Log.i(logger, "creating view for position " + position + " and item " + item);
 
                 String descriptionSubstring;
                 if (item.getDescription().length() > 20) {
-                    descriptionSubstring = item.getDescription().substring(0,17) + "...";
-                } else { descriptionSubstring = item.getDescription(); }
+                    descriptionSubstring = item.getDescription().substring(0, 17) + "...";
+                } else {
+                    descriptionSubstring = item.getDescription();
+                }
 
                 viewHolder.itemNameView.setText(item.getName());
                 viewHolder.itemDescriptionView.setText(descriptionSubstring);
@@ -138,7 +146,7 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
             }
         });
 
-        crudOperations = ((ToDoApplication)getApplication()).getCRUDOperationsImpl();
+        crudOperations = ((ToDoApplication) getApplication()).getCRUDOperationsImpl();
 
         readItemsAndFillListView();
     }
@@ -152,11 +160,11 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
                 for (ToDo item : result) {
                     addItemToListView(item);
                 }
+                Log.i(logger, "items: " + itemsList);
+                sortByDone();
             }
-    });
-}
-
-
+        });
+    }
 
 
     private void showDetailviewForItemName(ToDo item) {
@@ -175,19 +183,17 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        Log.i(logger,"onActivityResult(): " + requestCode + ", " + resultCode + ": " + data);
+        Log.i(logger, "onActivityResult(): " + requestCode + ", " + resultCode + ": " + data);
 
 
         if (requestCode == CREATE_ITEM && resultCode == Activity.RESULT_OK) {
             ToDo item = (ToDo) data.getSerializableExtra(TODO_ITEM);
             createAndShowItem(item);
-        }
-        else if (requestCode == EDIT_ITEM) {
+        } else if (requestCode == EDIT_ITEM) {
             if (resultCode == DetailviewActivity.RESULT_DELETE_ITEM) {
                 ToDo item = (ToDo) data.getSerializableExtra(TODO_ITEM);
                 deleteAndRemoveItem(item);
-            }
-            else if (resultCode == DetailviewActivity.RESULT_UPDATE_ITEM) {
+            } else if (resultCode == DetailviewActivity.RESULT_UPDATE_ITEM) {
                 ToDo item = (ToDo) data.getSerializableExtra(TODO_ITEM);
                 updateItem(item);
             }
@@ -221,8 +227,8 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
                     listViewAdapter.remove(findDataItemInList(item.getId()));
                 }
 
-                }
-            });
+            }
+        });
     }
 
     private void updateItem(final ToDo item) {
@@ -241,10 +247,8 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
     }
 
 
-
-
     private ToDo findDataItemInList(long id) {
-        for (int i=0;i<listViewAdapter.getCount();i++) {
+        for (int i = 0; i < listViewAdapter.getCount(); i++) {
             if (listViewAdapter.getItem(i).getId() == id) {
                 return listViewAdapter.getItem(i);
             }
@@ -273,4 +277,85 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
         public CheckBox itemDoneView;
         public TextView itemDueDateView;
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.options_overview, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.sortByNames:
+                sortByNameDone();
+                return true;
+            case R.id.sortByDateNFav:
+                sortByDateFavDone();
+                return true;
+            case R.id.sortByFavNDate:
+                sortByFavDateDone();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void sortByFavDateDone() {
+        sortByDate();
+        sortByFav();
+        sortByDone();
+        this.listViewAdapter.notifyDataSetChanged();
+            }
+
+    private void sortByDateFavDone() {
+        sortByFav();
+        sortByDate();
+        sortByDone();
+        this.listViewAdapter.notifyDataSetChanged();
+            }
+
+    private void sortByNameDone() {
+        sortByName();
+        sortByDone();
+        this.listViewAdapter.notifyDataSetChanged();
+    }
+
+    private void sortByDone() {
+        Collections.sort(itemsList, new Comparator<ToDo>() {
+            @Override
+            public int compare(ToDo o1, ToDo o2) {
+                return Boolean.compare(o2.isDone(), o1.isDone());
+            }
+        });
+    }
+
+    private void sortByFav() {
+        Collections.sort(itemsList, new Comparator<ToDo>() {
+            @Override
+            public int compare(ToDo o1, ToDo o2) {
+                return Boolean.compare(o2.isFavourite(), o1.isFavourite());
+            }
+        });
+    }
+
+    private void sortByDate() {
+        Collections.sort(itemsList, new Comparator<ToDo>() {
+            @Override
+            public int compare(ToDo o1, ToDo o2) {
+                return Long.compare(o1.getDueDate(), o2.getDueDate());
+            }
+        });
+    }
+
+    private void sortByName() {
+        Collections.sort(itemsList, new Comparator<ToDo>() {
+            @Override
+            public int compare(ToDo o1, ToDo o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+    }
+
 }
+

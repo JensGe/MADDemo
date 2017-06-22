@@ -7,4 +7,11 @@
     <string name="itemDescription_hint">Describe your ToDo</string>
     <string name="duedate_hint">Due Date</string>
     <string name="duetime_hint">Due Time</string>
+    <string name="sort_alphabetically">Sort alphabetically</string>
+    <string name="sort_by_importance">Sort by Importance</string>
+    <string name="sort_by_date">Sort by Date</string>
+    <string name="filterdone">Filter Done</string>
+    <string name="filterunimportant">Filter Unimportant</string>
+    <string name="unfilter">Delete Filter</string>
+    <string name="contacts">Contacts</string>
 </resources>

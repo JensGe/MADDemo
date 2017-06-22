@@ -13,6 +13,7 @@ public class ToDo implements Serializable{
     private long id;
     private String name;
     private String description;
+    private String contacts;
 
     @SerializedName("expiry")
     private long dueDate;
@@ -101,5 +102,13 @@ public class ToDo implements Serializable{
                 ", favourite=" + favourite +
                 ", done=" + done +
                 '}';
+    }
+
+    public String getContacts() {
+        return contacts;
+    }
+
+    public void setContacts(String contacts) {
+        this.contacts = contacts;
     }
 }

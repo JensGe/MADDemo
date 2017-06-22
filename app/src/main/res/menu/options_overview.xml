@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/filterItem"
+        app:showAsAction="always"
+        android:icon="@drawable/filter_list_white_24dp"
+        android:title="FILTER">
+        <menu>
+            <group android:id="@+id/filterGroup" android:checkableBehavior="none">
+                <item android:id="@+id/unfilter"
+                    android:title="@string/unfilter"/>
+                <item android:id="@+id/filterDone"
+                    android:title="@string/filterdone"/>
+                <item android:id="@+id/filterUnimportant"
+                    android:title="@string/filterunimportant"/>
+            </group>
+        </menu>
+    </item>
+    <item android:id="@+id/sortItem"
+        app:showAsAction="always"
+        android:icon="@drawable/sort_white_24dp"
+        android:title="SORT">
+    <menu>
+        <group android:id="@+id/sortGroup" android:checkableBehavior="none">
+            <item android:id="@+id/sortByNames"
+                android:title="@string/sort_alphabetically"/>
+            <item android:id="@+id/sortByFavNDate"
+                android:title="@string/sort_by_importance"/>
+            <item android:id="@+id/sortByDateNFav"
+                android:title="@string/sort_by_date"/>
+
+        </group>
+    </menu>
+    </item>
+
+
+</menu>

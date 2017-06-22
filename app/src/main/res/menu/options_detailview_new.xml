@@ -12,4 +12,5 @@
         android:icon="@drawable/trash_white_24"
         android:title="DELETE" />
 
+
 </menu>
