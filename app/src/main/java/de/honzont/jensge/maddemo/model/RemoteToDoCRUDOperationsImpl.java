@@ -37,6 +37,9 @@ public class RemoteToDoCRUDOperationsImpl implements IToDoCRUDOperations {
 
         @DELETE("/api/todos/{id}")
         public Call<Boolean> deleteToDo(@Path("id") long id);
+//
+//        @PUT("/api/users/auth")
+//        public Call<User> authenticateUser(@Body String email, @Body String pwd);
     }
 
     private IToDoCRUDWebAPI webAPI;

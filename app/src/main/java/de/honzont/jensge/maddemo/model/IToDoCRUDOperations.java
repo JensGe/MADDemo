@@ -21,7 +21,6 @@ public interface IToDoCRUDOperations {
     public ToDo updateToDo(long id, ToDo item);
 
     // Delete
-
     public boolean deleteToDo(long id);
 
 

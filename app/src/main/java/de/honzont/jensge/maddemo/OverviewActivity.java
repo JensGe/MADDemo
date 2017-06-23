@@ -2,8 +2,10 @@ package de.honzont.jensge.maddemo;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +19,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,9 +30,11 @@ import java.util.List;
 import java.util.Locale;
 
 import de.honzont.jensge.maddemo.model.IToDoCRUDOperationsASync;
+import de.honzont.jensge.maddemo.model.LocalToDoCRUDOperationsImpl;
 import de.honzont.jensge.maddemo.model.ToDo;
 
 import static de.honzont.jensge.maddemo.DetailviewActivity.TODO_ITEM;
+import static de.honzont.jensge.maddemo.LoginviewActivity.SERVCON;
 
 public class OverviewActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -42,6 +47,8 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
     private View addItemAction;
     private ArrayAdapter<ToDo> listViewAdapter;
     private List<ToDo> itemsList = new ArrayList<ToDo>();
+
+    private boolean serverConnection;
 
     private ProgressDialog progressDialog;
     private IToDoCRUDOperationsASync crudOperations;
@@ -65,6 +72,13 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
         // 3. set content on the elements
         setTitle(R.string.title_overview);
         helloText.setText(R.string.app_content);
+        serverConnection = getIntent().getExtras().getBoolean(SERVCON);
+        if (!serverConnection) {
+            Toast.makeText(getApplicationContext(), "No Server Connection available. \nrunning locally", Toast.LENGTH_LONG).show();
+        }
+        else if (serverConnection) {
+            Toast.makeText(getApplicationContext(), "Connection and Login accepted, \nrunning remotely", Toast.LENGTH_LONG).show();
+        }
 
         // 4. set listeners to allow user interactions
         helloText.setOnClickListener(this);
@@ -267,8 +281,7 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
-        /****/
+        progressDialog.dismiss();
     }
 
     private class ItemViewHolder {
@@ -299,6 +312,27 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+        builder.setMessage("Do you want to Quit?");
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                System.exit(0);
+            }
+        });
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     private void sortByFavDateDone() {

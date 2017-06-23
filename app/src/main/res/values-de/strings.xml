@@ -15,4 +15,8 @@
     <string name="filterunimportant">Unwichtige ausblenden</string>
     <string name="unfilter">Filterung entfernen</string>
     <string name="contacts">Contacts</string>
+    <string name="e_mail_address">E-Mail Adresse</string>
+    <string name="password">Passwort</string>
+    <string name="login">Einloggen</string>
+    <string name="noEmailError">Keine gültige E-Mail Adresse</string>
 </resources>
