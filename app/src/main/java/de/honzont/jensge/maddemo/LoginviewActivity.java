@@ -172,7 +172,7 @@ public class LoginviewActivity extends AppCompatActivity implements View.OnClick
         new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected void onPreExecute() {
-                progressDialog.setMessage("Trying to connect to Server");
+                progressDialog.setMessage("Trying to connect to Server (2 sec)");
                 progressDialog.show();
             }
 
@@ -195,8 +195,8 @@ public class LoginviewActivity extends AppCompatActivity implements View.OnClick
                 Log.i(logger, "Open Connection: " + conn);
 
                 assert conn != null;
-                conn.setReadTimeout(10000);
-                conn.setConnectTimeout(10000);
+                conn.setReadTimeout(2000);
+                conn.setConnectTimeout(2000);
 
                 try {
                     conn.setRequestMethod("GET");

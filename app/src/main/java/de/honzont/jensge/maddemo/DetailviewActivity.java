@@ -106,7 +106,6 @@ public class DetailviewActivity extends AppCompatActivity implements View.OnClic
                     cursor.moveToFirst();
                     String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
                     contactList.append(name + "\n");
-//                    contactList.append(String.valueOf(item.getContacts().get(index)) + "\n");
                 }
             }
 
