@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -15,11 +17,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,12 +31,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import de.honzont.jensge.maddemo.model.IToDoCRUDOperations;
 import de.honzont.jensge.maddemo.model.IToDoCRUDOperationsASync;
 import de.honzont.jensge.maddemo.model.LocalToDoCRUDOperationsImpl;
 import de.honzont.jensge.maddemo.model.ToDo;
 
 import static de.honzont.jensge.maddemo.DetailviewActivity.TODO_ITEM;
 import static de.honzont.jensge.maddemo.LoginviewActivity.SERVCON;
+import static de.honzont.jensge.maddemo.LoginviewActivity.logger;
 
 public class OverviewActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -52,6 +56,7 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
 
     private ProgressDialog progressDialog;
     private IToDoCRUDOperationsASync crudOperations;
+    private IToDoCRUDOperations crudOperationsLocal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,10 +79,10 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
         helloText.setText(R.string.app_content);
         serverConnection = getIntent().getExtras().getBoolean(SERVCON);
         if (!serverConnection) {
-            Toast.makeText(getApplicationContext(), "No Server Connection available. \nrunning locally", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Local Mode", Toast.LENGTH_LONG).show();
         }
         else if (serverConnection) {
-            Toast.makeText(getApplicationContext(), "Connection and Login accepted, \nrunning remotely", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Remote Mode", Toast.LENGTH_LONG).show();
         }
 
         // 4. set listeners to allow user interactions
@@ -105,7 +110,9 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
                     // read out the text view for the item name
                     TextView itemNameView = (TextView) itemView.findViewById(R.id.itemName);
                     TextView itemDescriptionView = (TextView) itemView.findViewById(R.id.itemDescription);
-                    CheckBox itemDoneView = (CheckBox) itemView.findViewById(R.id.itemDone);
+                    ToggleButton itemDoneToggle = (ToggleButton) itemView.findViewById(R.id.toggle_doneButton_ov);
+                    ToggleButton itemFavToggle = (ToggleButton) itemView.findViewById(R.id.toggle_favButton_ov);
+
                     TextView itemDueDateView = (TextView) itemView.findViewById(R.id.itemDueDate);
 
                     // create a new instance of the view holder
@@ -113,7 +120,9 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
                     //set the itemNameView attribut on view holder to text view
                     itemViewHolder.itemNameView = itemNameView;
                     itemViewHolder.itemDescriptionView = itemDescriptionView;
-                    itemViewHolder.itemDoneView = itemDoneView;
+                    itemViewHolder.itemDoneToggle = itemDoneToggle;
+                    itemViewHolder.itemFavToggle = itemFavToggle;
+
                     itemViewHolder.itemDueDateView = itemDueDateView;
 
                     // set the view holder on the list item view
@@ -133,14 +142,52 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
 
                 viewHolder.itemNameView.setText(item.getName());
                 viewHolder.itemDescriptionView.setText(descriptionSubstring);
-                viewHolder.itemDoneView.setChecked(item.isDone());
+
+
+                // set OnCheckedChangeListeners null
+                viewHolder.itemDoneToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                    }
+                });
+                viewHolder.itemFavToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    }
+                });
+
+                viewHolder.itemDoneToggle.setChecked(item.isDone());
+                viewHolder.itemFavToggle.setChecked(item.isFavourite());
                 viewHolder.itemDueDateView.setText(new SimpleDateFormat("dd. MM. yyyy", Locale.GERMANY).format(new Date(item.getDueDate())));
 
-                viewHolder.itemDoneView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                long currentTime = System.currentTimeMillis();
+                if (item.getDueDate() < currentTime) {
+                    viewHolder.itemDueDateView.setTextColor(Color.RED);
+                } else {
+                    viewHolder.itemDueDateView.setTextColor(Color.BLACK);
+
+                }
+                if (item.isDone()) {
+                    viewHolder.itemNameView.setTypeface(null, Typeface.ITALIC);
+                } else {
+                    viewHolder.itemNameView.setTypeface(null, Typeface.NORMAL);
+                }
+
+
+                viewHolder.itemDoneToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                         item.setDone(isChecked);
                         Log.i(logger, "Check set: " + isChecked);
+                    }
+                });
+
+                viewHolder.itemFavToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        item.setFavourite(isChecked);
+                        Log.i(logger, "Favourite set: " + isChecked);
                     }
                 });
 
@@ -161,11 +208,58 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
         });
 
         crudOperations = ((ToDoApplication) getApplication()).getCRUDOperationsImpl();
+        crudOperationsLocal = new LocalToDoCRUDOperationsImpl(this);
+
+        if (serverConnection && crudOperationsLocal.readAllToDos().size() == 0) {
+            syncToDosRemoteToLocal();
+        }
+
+        if (serverConnection && crudOperationsLocal.readAllToDos().size() > 0) {
+            deleteRemoteToDos();
+            syncToDosLocalToRemote();
+        }
 
         readItemsAndFillListView();
+
     }
 
+    private void deleteRemoteToDos() {
+
+    }
+
+    private void syncToDosRemoteToLocal() {
+        progressDialog.setMessage("Read Remote Items and Fill Local DB");
+        progressDialog.show();
+        crudOperations.readAllToDos(new IToDoCRUDOperationsASync.CallbackFunction<List<ToDo>>() {
+            @Override
+            public void process(List<ToDo> result) {
+                progressDialog.hide();
+                for (ToDo item : result) {
+                    crudOperationsLocal.createToDo(item);
+                }
+            }
+        });
+    }
+
+    private void syncToDosLocalToRemote() {
+        progressDialog.setMessage("Read Local Items and Fill Remote DB");
+        progressDialog.show();
+        final List<ToDo> localToDos = crudOperationsLocal.readAllToDos();
+        for (final ToDo item : localToDos) {
+            crudOperations.createToDo(item, new IToDoCRUDOperationsASync.CallbackFunction<ToDo>() {
+                @Override
+                public void process(ToDo result) {
+                    Log.i(logger, "Item Created: " + item + result);
+               }
+            });
+        }
+        progressDialog.hide();
+
+    }
+
+
     private void readItemsAndFillListView() {
+        progressDialog.setMessage("Read Items and Fill in List View");
         progressDialog.show();
         crudOperations.readAllToDos(new IToDoCRUDOperationsASync.CallbackFunction<List<ToDo>>() {
             @Override
@@ -175,7 +269,7 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
                     addItemToListView(item);
                 }
                 Log.i(logger, "items: " + itemsList);
-                sortByDone();
+                sortByNameDone();
             }
         });
     }
@@ -223,6 +317,7 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
             public void process(ToDo result) {
                 addItemToListView(result);
                 progressDialog.hide();
+                sortByNameDone();
             }
         });
 
@@ -255,6 +350,7 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
                 listViewAdapter.remove(findDataItemInList(item.getId()));
                 listViewAdapter.add(item);
                 progressDialog.hide();
+                sortByNameDone();
 
             }
         });
@@ -281,13 +377,17 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     protected void onDestroy() {
+        super.onDestroy();
         progressDialog.dismiss();
     }
 
     private class ItemViewHolder {
         public TextView itemNameView;
         public TextView itemDescriptionView;
-        public CheckBox itemDoneView;
+//        public CheckBox itemDoneBox;
+//        public CheckBox itemFavBox;
+        public ToggleButton itemDoneToggle;
+        public ToggleButton itemFavToggle;
         public TextView itemDueDateView;
     }
 
@@ -359,7 +459,7 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
         Collections.sort(itemsList, new Comparator<ToDo>() {
             @Override
             public int compare(ToDo o1, ToDo o2) {
-                return Boolean.compare(o2.isDone(), o1.isDone());
+                return Boolean.compare(o1.isDone(), o2.isDone());
             }
         });
     }

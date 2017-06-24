@@ -3,10 +3,13 @@ package de.honzont.jensge.maddemo;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
@@ -43,7 +46,7 @@ public class LoginviewActivity extends AppCompatActivity implements View.OnClick
 
     public static final String SERVCON = "serverConnection";
     private Button loginButton;
-    private TextView loginEmail, loginPassword;
+    private TextView loginEmail, loginPassword, loginError;
     private ProgressDialog progressDialog;
     protected static String logger = LoginviewActivity.class.getSimpleName();
 
@@ -63,6 +66,7 @@ public class LoginviewActivity extends AppCompatActivity implements View.OnClick
         loginButton = (Button) findViewById(R.id.loginButton);
         loginEmail = (TextView) findViewById(R.id.loginEmail);
         loginPassword = (TextView) findViewById(R.id.loginPassword);
+        loginError = (TextView) findViewById(R.id.loginErrorField);
 
         loginEmail.setText("s@bht.de");
         loginPassword.setText("000000");
@@ -86,6 +90,42 @@ public class LoginviewActivity extends AppCompatActivity implements View.OnClick
                 }
             }
         });
+        loginEmail.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                loginButton.setError(null);
+                loginButton.clearFocus();
+                loginError.setText(null);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        loginPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                loginButton.setError(null);
+                loginButton.clearFocus();
+                loginError.setText(null);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
 
@@ -94,9 +134,6 @@ public class LoginviewActivity extends AppCompatActivity implements View.OnClick
         if (v == loginButton) {
             if (validateEmailText() && validatePasswordText()) {
                 validateAuthentification();
-                if (userHasPermission) {
-                    runApplication(true);
-                };
             }
 
         }
@@ -295,8 +332,10 @@ public class LoginviewActivity extends AppCompatActivity implements View.OnClick
                 progressDialog.hide();
                 if (aBoolean) {
                     runApplication(true);
-                } else if (aBoolean == null) {
-                    Log.i(logger, "OnPostExecute NULL");
+                } else if (!userHasPermission) {
+                    loginButton.setError("");
+                    loginError.setText("Login Failed");
+                    loginError.setTextColor(Color.RED);
                 }
 
             }
@@ -306,6 +345,7 @@ public class LoginviewActivity extends AppCompatActivity implements View.OnClick
 
     @Override
     protected void onDestroy() {
+        super.onDestroy();
         progressDialog.dismiss();
     }
 }

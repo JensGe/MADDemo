@@ -11,22 +11,20 @@
     <ToggleButton
         android:id="@+id/toggle_favButton"
         style="@style/toggleButton"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
         android:layout_gravity="right"
         android:background="@drawable/ic_toggle_fav_bg"
-        android:layout_alignBottom="@+id/itemName"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true" />
 
     <ToggleButton
         android:id="@+id/toggle_doneButton"
         style="@style/toggleButton"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
         android:background="@drawable/ic_toggle_done_bg"
-        android:layout_alignBottom="@+id/itemName"
-        android:layout_toLeftOf="@+id/toggle_favButton"
+        android:layout_alignParentTop="true"
         android:layout_toStartOf="@+id/toggle_favButton" />
 
     <EditText
@@ -114,11 +112,19 @@
         android:id="@+id/addContactButton"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:background="@drawable/person_add_black_24dp"
-        android:src="@drawable/person_add_black_24dp"
+        android:background="@drawable/account_plus_black_36"
+        android:src="@drawable/account_plus_black_36"
         android:layout_alignTop="@+id/contactList"
         android:layout_alignParentStart="true" />
 
+    <Button
+        android:id="@+id/removeAllContactButton"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@drawable/account_remove_all_black_36"
+        android:src="@drawable/account_remove_all_black_36"
+        android:layout_below="@+id/addContactButton"
+        android:layout_alignParentStart="true" />
 
     <TextView
         android:id="@+id/contactList"
@@ -128,6 +134,7 @@
         android:layout_below="@+id/itemDescription"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="32dp"
+        android:textSize="18sp"
         android:layout_alignStart="@+id/itemDueDate" />
 
 

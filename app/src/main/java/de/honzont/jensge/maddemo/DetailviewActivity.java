@@ -3,12 +3,13 @@ package de.honzont.jensge.maddemo;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -22,6 +23,8 @@ import android.widget.ToggleButton;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -42,9 +45,10 @@ public class DetailviewActivity extends AppCompatActivity implements View.OnClic
     protected static String logger = DetailviewActivity.class.getSimpleName();
 
     private TextView itemNameText, itemDescriptionText, contactList, itemDueDateDate, itemDueDateTime;
-    private Button datePickButton, timePickButton, addContactButton;
+    private Button datePickButton, timePickButton, addContactButton, removeAllContactButton;
+    ArrayList<Uri> contactURIs = new ArrayList<>();
 
-    private String dateString, timeString, contactsString;
+    private String dateString, timeString;
     private ToggleButton favouriteToggle, doneToggle;
 
     private Button saveItemButton;
@@ -65,12 +69,14 @@ public class DetailviewActivity extends AppCompatActivity implements View.OnClic
         itemDescriptionText = (TextView) findViewById(R.id.itemDescription);
         contactList = (TextView) findViewById(R.id.contactList);
 
+
         itemDueDateDate = (TextView) findViewById(R.id.itemDueDate);
         itemDueDateTime = (TextView) findViewById(R.id.itemDueTime);
 
         datePickButton = (Button) findViewById(R.id.date_pick_button);
         timePickButton = (Button) findViewById(R.id.time_pick_button);
         addContactButton = (Button) findViewById(R.id.addContactButton);
+        removeAllContactButton = (Button) findViewById(R.id.removeAllContactButton);
 
         favouriteToggle = (ToggleButton) findViewById(R.id.toggle_favButton);
         doneToggle = (ToggleButton) findViewById(R.id.toggle_doneButton);
@@ -89,8 +95,21 @@ public class DetailviewActivity extends AppCompatActivity implements View.OnClic
             itemDueDateTime.setText(timeString);
             favouriteToggle.setChecked(item.isFavourite());
             doneToggle.setChecked(item.isDone());
-//            contactsString = item.getContacts();
-            contactList.setText(item.getContacts());
+
+
+            if (item.getContacts() != null) {
+                for (int index=0; index < item.getContacts().size(); index++) {
+                    contactURIs.add(Uri.parse(item.getContacts().get(index)));
+                }
+                for(int index=0; index < item.getContacts().size(); index++) {
+                    Cursor cursor = getContentResolver().query(contactURIs.get(index), null, null, null, null);
+                    cursor.moveToFirst();
+                    String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                    contactList.append(name + "\n");
+//                    contactList.append(String.valueOf(item.getContacts().get(index)) + "\n");
+                }
+            }
+
         }
 
         // prepare for user interaction
@@ -107,6 +126,7 @@ public class DetailviewActivity extends AppCompatActivity implements View.OnClic
         itemDueDateTime.setOnClickListener(this);
 
         addContactButton.setOnClickListener(this);
+        removeAllContactButton.setOnClickListener(this);
 
     }
 
@@ -170,42 +190,47 @@ public class DetailviewActivity extends AppCompatActivity implements View.OnClic
         else if (v == addContactButton) {
             addContact();
         }
+
+        else if (v == removeAllContactButton) {
+            contactList.setText("");
+            contactURIs = null;
+        }
     }
 
     private void saveItem() {
         Intent returnIntent = new Intent();
         String itemName = itemNameText.getText().toString();
         String itemDescription = itemDescriptionText.getText().toString();
+
+        ArrayList<String> contacts = new ArrayList<String>();
+        if (contactURIs != null) {
+            for (int index=0; index < contactURIs.size(); index++) {
+                contacts.add(String.valueOf(contactURIs.get(index)));
+            }
+        } else {
+            contacts = null;
+        }
+
+        favourite = favouriteToggle.isChecked();
+        done = doneToggle.isChecked();
+
+        long itemDueDate = System.currentTimeMillis();
+
         SimpleDateFormat f = new SimpleDateFormat("dd. MM. yyyy HH:mm", Locale.GERMANY);
-        long itemDueDate = 0;
         try {
             Date d = f.parse(itemDueDateDate.getText().toString() + " " + itemDueDateTime.getText().toString());
             itemDueDate = d.getTime();
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        favourite = favouriteToggle.isChecked();
-        done = doneToggle.isChecked();
-        ToDo item = new ToDo(itemName, itemDescription, itemDueDate, favourite, done);
+        ToDo item = new ToDo(itemName, itemDescription, itemDueDate, favourite, done, contacts);
+
+
         returnIntent.putExtra(TODO_ITEM, item);
         Log.i(logger, "Creating item " + item);
         setResult(Activity.RESULT_OK, returnIntent);
-/*        Log.i(logger,"Updating item " + item);
-        setResult(RESULT_UPDATE_ITEM, returnIntent);*/
         Log.i(logger, "returnintent: " + returnIntent);
         finish();
-    }
-
-    private void deleteItem() {
-        // ToDo Abfrage ob wirklich gelöscht werden soll
-
-        Intent returnIntent = new Intent();
-        returnIntent.putExtra(TODO_ITEM, item);
-        //Hier reicht die Übergabe der ID
-        setResult(RESULT_DELETE_ITEM, returnIntent);
-        Log.i("DetailviewActivity", "finishing");
-        finish();
-
     }
 
     private void updateItem() {
@@ -213,17 +238,30 @@ public class DetailviewActivity extends AppCompatActivity implements View.OnClic
         Intent returnIntent = new Intent();
         String itemName = itemNameText.getText().toString();
         String itemDescription = itemDescriptionText.getText().toString();
+        ArrayList<String> contacts = new ArrayList<String>();
+
+        if (contactURIs != null) {
+            for (int index=0; index < contactURIs.size(); index++) {
+                contacts.add(String.valueOf(contactURIs.get(index)));
+            }
+        } else {
+            contacts = null;
+        }
+
+        favourite = favouriteToggle.isChecked();
+        done = doneToggle.isChecked();
+
+        long itemDueDate = System.currentTimeMillis();
+
         SimpleDateFormat f = new SimpleDateFormat("dd. MM. yyyy HH:mm", Locale.GERMANY);
-        long itemDueDate = 0;
         try {
             Date d = f.parse(itemDueDateDate.getText().toString() + " " + itemDueDateTime.getText().toString());
             itemDueDate = d.getTime();
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        boolean favourite = favouriteToggle.isChecked();
-        done = doneToggle.isChecked();
-        ToDo item = new ToDo(itemId, itemName, itemDescription, itemDueDate, favourite, done);
+
+        ToDo item = new ToDo(itemId, itemName, itemDescription, itemDueDate, favourite, done, contacts);
         returnIntent.putExtra(TODO_ITEM, item);
         Log.i(logger, "Updating item " + item);
         setResult(RESULT_UPDATE_ITEM, returnIntent);
@@ -231,6 +269,32 @@ public class DetailviewActivity extends AppCompatActivity implements View.OnClic
         finish();
 
     }
+
+    private void deleteItem() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+        builder.setMessage("Really want to Delete?");
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra(TODO_ITEM, item);
+                setResult(RESULT_DELETE_ITEM, returnIntent);
+                finish();
+            }
+        });
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+
+    }
+
+
 
     private void addContact() {
         Intent pickContactIntent = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
@@ -248,12 +312,13 @@ public class DetailviewActivity extends AppCompatActivity implements View.OnClic
     private void processSelectedContact(Uri uri) {
         Cursor cursor = getContentResolver().query(uri, null, null, null, null);
         cursor.moveToNext();
+
         String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
         Log.i(logger, "Contact Name: " + name);
+        contactURIs.add(uri);
+        contactList.setText(contactList.getText() + String.valueOf(name)+ "\n");
 
-        long contactId = cursor.getLong(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID));
-        Log.i(logger, "Contact ID: " + contactId);
-        contactList.setText(contactList.getText() + String.valueOf(uri)+ ", ");
+//        contactsString = String.valueOf(uri);
 
 //        Cursor phoneCursor = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID + "=?", new String[]{String.valueOf(contactId)}, null);
 //        if (phoneCursor.getCount() > 0) {

@@ -10,6 +10,7 @@ import de.honzont.jensge.maddemo.model.IToDoCRUDOperations;
 import de.honzont.jensge.maddemo.model.IToDoCRUDOperationsASync;
 import de.honzont.jensge.maddemo.model.LocalToDoCRUDOperationsImpl;
 import de.honzont.jensge.maddemo.model.RemoteToDoCRUDOperationsImpl;
+import de.honzont.jensge.maddemo.model.SimpleToDoCRUDOperationsImpl;
 import de.honzont.jensge.maddemo.model.ToDo;
 
 /**
@@ -21,7 +22,7 @@ public class ToDoApplication extends Application implements IToDoCRUDOperationsA
     private static String logger = ToDoApplication.class.getSimpleName();
 
     private IToDoCRUDOperations syncCrudOperations = new RemoteToDoCRUDOperationsImpl();
-//    private IToDoCRUDOperations syncCrudOperations = new LocalToDoCRUDOperationsImpl(this);
+
 
     @Override
     public void onCreate() {

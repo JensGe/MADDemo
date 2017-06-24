@@ -13,7 +13,7 @@
     <string name="filterdone">Filter Done</string>
     <string name="filterunimportant">Filter Unimportant</string>
     <string name="unfilter">Delete Filter</string>
-    <string name="contacts">Contacts</string>
+    <string name="contacts">No Contacts linked</string>
     <string name="e_mail_address">E-Mail Address</string>
     <string name="password">Password</string>
     <string name="login">Login</string>

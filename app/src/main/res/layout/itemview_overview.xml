@@ -14,7 +14,8 @@
         android:text="lorem"
         android:textSize="20sp"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/toggle_favButton_ov" />
 
     <TextView
         android:id="@+id/itemDescription"
@@ -24,7 +25,6 @@
         android:textSize="12sp"
         android:layout_alignBaseline="@+id/itemDueDate"
         android:layout_alignBottom="@+id/itemDueDate"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
     <TextView
@@ -33,18 +33,51 @@
         android:layout_height="wrap_content"
         android:textSize="12sp"
         android:text="21.05 2017"
-        android:layout_below="@+id/itemDone"
-        android:layout_alignParentRight="true"
+        android:layout_below="@+id/toggle_favButton_ov"
+        android:layout_alignStart="@+id/toggle_favButton_ov"
         android:layout_alignParentEnd="true" />
 
-    <CheckBox
-        android:focusable="false" android:id="@+id/itemDone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/itemName"
-        android:layout_alignBottom="@+id/itemName"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+    <ToggleButton
+        android:id="@+id/toggle_favButton_ov"
+        style="@style/toggleButton"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_gravity="right"
+        android:background="@drawable/ic_toggle_fav_bg"
+        android:layout_alignParentTop="true"
+        android:layout_toStartOf="@+id/toggle_doneButton_ov"
+        android:focusable="false"
+        android:clickable="true"/>
+
+    <ToggleButton
+        android:id="@+id/toggle_doneButton_ov"
+        style="@style/toggleButton"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:background="@drawable/ic_toggle_done_bg"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:focusable="false"
+        android:clickable="true"/>
+
+
+    <!--<CheckBox-->
+        <!--android:focusable="false" android:id="@+id/itemDoneBox"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="30dp"-->
+        <!--android:gravity="center_vertical"-->
+        <!--android:text="Done"-->
+        <!--android:layout_alignParentTop="true"-->
+        <!--android:layout_alignParentEnd="true" />-->
+
+    <!--<CheckBox-->
+        <!--android:focusable="false" android:id="@+id/itemFavBox"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="30dp"-->
+        <!--android:gravity="center_vertical"-->
+        <!--android:text="Fav"-->
+        <!--android:layout_below="@+id/itemDoneBox"-->
+        <!--android:layout_alignStart="@+id/itemDoneBox" />-->
 
 
     <!-- Name, DueDate, Done, Fav -->

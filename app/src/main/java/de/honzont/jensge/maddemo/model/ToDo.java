@@ -3,6 +3,7 @@ package de.honzont.jensge.maddemo.model;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Created by Jens on 03.05.2017.
@@ -13,7 +14,8 @@ public class ToDo implements Serializable{
     private long id;
     private String name;
     private String description;
-    private String contacts;
+
+    private ArrayList<String> contacts;
 
     @SerializedName("expiry")
     private long dueDate;
@@ -27,20 +29,22 @@ public class ToDo implements Serializable{
     public ToDo(String name) {
         this.name = name;
     }
-    public ToDo(String name, String description, long dueDate, boolean favourite, boolean done) {
+    public ToDo(String name, String description, long dueDate, boolean favourite, boolean done, ArrayList<String> contacts) {
         this.name = name;
         this.description = description;
         this.dueDate = dueDate;
         this.favourite = favourite;
         this.done = done;
+        this.contacts = contacts;
     }
-    public ToDo(long id, String name, String description, long dueDate, boolean favourite, boolean done) {
+    public ToDo(long id, String name, String description, long dueDate, boolean favourite, boolean done, ArrayList<String> contacts) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.dueDate = dueDate;
         this.favourite = favourite;
         this.done = done;
+        this.contacts = contacts;
     }
 
     public long getId() {
@@ -92,6 +96,14 @@ public class ToDo implements Serializable{
         this.favourite = favourite;
     }
 
+    public ArrayList<String> getContacts() {
+        return contacts;
+    }
+
+    public void setContacts(ArrayList<String> contacts) {
+        this.contacts = contacts;
+    }
+
     @Override
     public String toString() {
         return "ToDo{" +
@@ -101,14 +113,9 @@ public class ToDo implements Serializable{
                 ", description=" + description +
                 ", favourite=" + favourite +
                 ", done=" + done +
+                ", contacts=" + contacts +
                 '}';
     }
 
-    public String getContacts() {
-        return contacts;
-    }
 
-    public void setContacts(String contacts) {
-        this.contacts = contacts;
-    }
 }
