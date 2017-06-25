@@ -225,14 +225,17 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
         }
 
         if (serverConnection && !crudOperationsLocal.readAllToDos().isEmpty()) {
+            Log.i(logger, "Start Delete Remote Todos");
             deleteRemoteToDos();
-            syncToDosLocalToRemote();
+            Log.i(logger, "End Delete Remote Todos");
+
         }
-        if (!serverConnection) {
-            readLocalItemsAndFillListView();
-        } else if (serverConnection) {
-            readItemsAndFillListView();
-        }
+//        if (!serverConnection) {
+//            readLocalItemsAndFillListView();
+//        } else if (serverConnection) {
+//            readItemsAndFillListView();
+//        }
+        readLocalItemsAndFillListView();
 
 
     }
@@ -243,14 +246,19 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
         crudOperations.readAllToDos(new IToDoCRUDOperationsASync.CallbackFunction<List<ToDo>>() {
             @Override
             public void process(List<ToDo> result) {
-
-                for (ToDo item : result) {
+                Log.i(logger, "ToDo List to Delete: " + result.toString());
+                for (final ToDo item : result) {
                     crudOperations.deleteToDo(item.getId(), new IToDoCRUDOperationsASync.CallbackFunction<Boolean>() {
                         @Override
                         public void process(Boolean result) {
+                            Log.i(logger, "Deleted Todo" + item);
                         }
                     });
                 }
+                Log.i(logger, "Delete Remote Items Done");
+                Log.i(logger, "Start Sync Local2Remote Todos");
+                syncToDosLocalToRemote();
+                Log.i(logger, "End Sync Local2Remote Todos");
             }
         });
         progressDialog.hide();
@@ -269,7 +277,7 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
                 }
             }
         });
-        Toast.makeText(getApplicationContext(), "Sync Remote2Local Done", Toast.LENGTH_LONG);
+        Log.i(logger, "sync Todos Remote2Local Done");
     }
 
     private void syncToDosLocalToRemote() {
@@ -285,7 +293,7 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
             });
         }
         progressDialog.hide();
-        Toast.makeText(getApplicationContext(), "Sync Local2Remote Done", Toast.LENGTH_LONG).show();
+        Log.i(logger, "Local2Remote Sync Done");
     }
 
     private void readLocalItemsAndFillListView() {

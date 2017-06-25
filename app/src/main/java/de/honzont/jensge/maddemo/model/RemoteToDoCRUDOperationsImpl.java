@@ -21,6 +21,8 @@ import retrofit2.http.Path;
 
 public class RemoteToDoCRUDOperationsImpl implements IToDoCRUDOperations {
 
+    protected static String logger = LocalToDoCRUDOperationsImpl.class.getSimpleName();
+
     public interface IToDoCRUDWebAPI {
 
         @POST("/api/todos")
@@ -56,10 +58,10 @@ public class RemoteToDoCRUDOperationsImpl implements IToDoCRUDOperations {
     public ToDo createToDo(ToDo item) {
 
         try {
-            Log.i("RemoteToDoCRUDOpImpl","Got item: " + item);
+            Log.i(logger, "Got item: " + item);
             ToDo created;
             created = this.webAPI.createToDo(item).execute().body();
-            Log.i("RemoteToDoCRUDOpImpl","created ToDo: " + created);
+            Log.i(logger, "created ToDo: " + created);
             return created;
         } catch (IOException e) {
             e.printStackTrace();
@@ -85,10 +87,10 @@ public class RemoteToDoCRUDOperationsImpl implements IToDoCRUDOperations {
     @Override
     public ToDo updateToDo(long id, ToDo item) {
         try {
-            Log.i("RemoteToDoCRUDOpImpl", "Update item: " + item);
+            Log.i(logger, "Update item: " + item);
             ToDo updated;
             updated = this.webAPI.updateToDo(id, item).execute().body();
-            Log.i("RemoteToDoCRUDOpImpl", "Updated ToDo: " + updated);
+            Log.i(logger, "Updated ToDo: " + updated);
             return updated;
         } catch (IOException e) {
             e.printStackTrace();

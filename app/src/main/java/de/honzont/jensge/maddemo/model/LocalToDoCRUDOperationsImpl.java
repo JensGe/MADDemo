@@ -39,6 +39,7 @@ public class LocalToDoCRUDOperationsImpl implements IToDoCRUDOperations {
 
     @Override
     public ToDo createToDo(ToDo item) {
+        Log.i(logger, "Got item: " + item);
         ContentValues values = new ContentValues();
         values.put("NAME", item.getName());
         values.put("DUEDATE", item.getDueDate());
@@ -58,7 +59,7 @@ public class LocalToDoCRUDOperationsImpl implements IToDoCRUDOperations {
         values.put("CONTACTS", contacts);
         long id = db.insert("TODOS", null, values);
         item.setId(id);
-
+        Log.i(logger, "created ToDo: " + item);
         return item;
     }
 
