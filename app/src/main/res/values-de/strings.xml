@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MADDemo</string>
-    <string name="duedate_hint">Fälligkeitsdatum</string>
-    <string name="duetime_hint">Fälligkeitszeitpunkt</string>
+    <string name="duedate_hint">Datum</string>
+    <string name="duetime_hint">Uhrzeit</string>
     <string name="itemDescription_hint">Beschreibung des ToDos</string>
     <string name="itemName_hint">Neues ToDo</string>
     <string name="sort_alphabetically">Sortieren nach Alphabet</string>

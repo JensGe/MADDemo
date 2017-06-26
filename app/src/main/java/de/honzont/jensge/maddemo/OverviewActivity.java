@@ -37,7 +37,6 @@ import de.honzont.jensge.maddemo.model.LocalToDoCRUDOperationsImpl;
 import de.honzont.jensge.maddemo.model.ToDo;
 
 import static de.honzont.jensge.maddemo.DetailviewActivity.TODO_ITEM;
-import static de.honzont.jensge.maddemo.DetailviewActivity.logger;
 import static de.honzont.jensge.maddemo.LoginviewActivity.SERVCON;
 
 public class OverviewActivity extends AppCompatActivity implements View.OnClickListener {
@@ -147,11 +146,14 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
                 String descriptionSubstring = "";
 
                 try {
-                    if (item.getDescription().length() > 20) {
-                        descriptionSubstring = item.getDescription().substring(0, 17) + "...";
-                    } else {
-                        descriptionSubstring = item.getDescription();
+                    descriptionSubstring = item.getDescription();
+                    if (descriptionSubstring.length() > 40) {
+                        descriptionSubstring = item.getDescription().substring(0, 37) + " ...";
                     }
+                    if (descriptionSubstring.contains("\n")) {
+                        descriptionSubstring = descriptionSubstring.substring(0, descriptionSubstring.indexOf("\n")) + " ...";
+                    }
+
                 } catch (NullPointerException e) {
                     e.printStackTrace();
                 }
@@ -403,7 +405,6 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
         progressDialog.show();
         crudOperationsLocal.createToDo(item);
         addItemToListView(item);
-//        sortByNameDone();
         progressDialog.hide();
         Toast.makeText(getApplicationContext(), "Local ToDo created", Toast.LENGTH_SHORT).show();
         if (serverConnection) {
@@ -412,8 +413,6 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
             crudOperations.createToDo(item, new IToDoCRUDOperationsASync.CallbackFunction<ToDo>() {
                 @Override
                 public void process(ToDo result) {
-//                    addItemToListView(result);
-//                    sortByNameDone();
                     progressDialog.hide();
                     Toast.makeText(getApplicationContext(), "Remote ToDo created", Toast.LENGTH_SHORT).show();
                 }

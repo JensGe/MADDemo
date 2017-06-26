@@ -24,7 +24,6 @@ import android.widget.ToggleButton;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -51,7 +50,6 @@ public class DetailviewActivity extends AppCompatActivity implements View.OnClic
     private String dateString, timeString;
     private ToggleButton favouriteToggle, doneToggle;
 
-    private Button saveItemButton;
 
     private boolean done, favourite;
     private int dateYear, dateMonth, dateDay, timeHour, timeMinute;
@@ -81,8 +79,6 @@ public class DetailviewActivity extends AppCompatActivity implements View.OnClic
 
         favouriteToggle = (ToggleButton) findViewById(R.id.toggle_favButton);
         doneToggle = (ToggleButton) findViewById(R.id.toggle_doneButton);
-
-        saveItemButton = (Button) findViewById(R.id.saveItem);
 
         // set content on ui elements
         setTitle(R.string.title_detailview);
@@ -115,12 +111,6 @@ public class DetailviewActivity extends AppCompatActivity implements View.OnClic
         }
 
         // prepare for user interaction
-        saveItemButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                saveItem();
-            }
-        });
 
         datePickButton.setOnClickListener(this);
         itemDueDateDate.setOnClickListener(this);

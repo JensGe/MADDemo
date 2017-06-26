@@ -8,9 +8,7 @@ import java.util.List;
 
 import de.honzont.jensge.maddemo.model.IToDoCRUDOperations;
 import de.honzont.jensge.maddemo.model.IToDoCRUDOperationsASync;
-import de.honzont.jensge.maddemo.model.LocalToDoCRUDOperationsImpl;
 import de.honzont.jensge.maddemo.model.RemoteToDoCRUDOperationsImpl;
-import de.honzont.jensge.maddemo.model.SimpleToDoCRUDOperationsImpl;
 import de.honzont.jensge.maddemo.model.ToDo;
 
 /**
