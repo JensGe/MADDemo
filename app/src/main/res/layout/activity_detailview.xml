@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -62,14 +61,13 @@
         android:id="@+id/itemDueDate"
         android:layout_width="120dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="22dp"
-        android:layout_marginStart="22dp"
         android:hint="@string/duedate_hint"
         android:textSize="18sp"
         android:gravity="center_vertical"
-        android:layout_alignTop="@+id/date_pick_button"
+        android:paddingLeft="10dp"
+        android:layout_below="@+id/itemName"
         android:layout_toEndOf="@+id/date_pick_button"
-        android:layout_alignBottom="@+id/date_pick_button" />
+        android:layout_above="@+id/itemDescription" />
 
     <Button
         android:id="@+id/date_pick_button"
@@ -77,19 +75,16 @@
         android:layout_height="30dp"
         android:background="@drawable/calendar_black_24"
         android:src="@drawable/calendar_black_24"
-        android:layout_below="@+id/toggle_favButton"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="14dp" />
+        android:layout_below="@+id/itemName"
+        android:layout_alignParentStart="true" />
 
     <TextView
         android:id="@+id/itemDueTime"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/time_pick_button"
-        android:layout_marginLeft="14dp"
-        android:layout_marginStart="14dp"
         android:gravity="center_vertical"
+        android:paddingLeft="10dp"
         android:layout_toEndOf="@+id/time_pick_button"
         android:layout_toRightOf="@+id/time_pick_button"
         android:hint="@string/duetime_hint"
@@ -102,11 +97,18 @@
         android:layout_height="30dp"
         android:background="@drawable/calendar_clock_black_24"
         android:src="@drawable/calendar_clock_black_24"
-        android:layout_alignTop="@+id/itemDueDate"
-        android:layout_toRightOf="@+id/itemDueDate"
         android:layout_marginLeft="14dp"
-        android:layout_marginStart="14dp"
-        android:layout_alignBottom="@+id/date_pick_button" />
+        android:layout_below="@+id/itemName"
+        android:layout_toEndOf="@+id/itemDueDate" />
+
+    <Button
+        android:id="@+id/date_delete_button"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@drawable/calendar_remove_black_24"
+        android:src="@drawable/calendar_remove_black_24"
+        android:layout_below="@+id/itemName"
+        android:layout_alignParentEnd="true" />
 
     <Button
         android:id="@+id/addContactButton"

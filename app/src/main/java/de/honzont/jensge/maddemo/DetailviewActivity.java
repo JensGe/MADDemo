@@ -45,7 +45,7 @@ public class DetailviewActivity extends AppCompatActivity implements View.OnClic
     protected static String logger = DetailviewActivity.class.getSimpleName();
 
     private TextView itemNameText, itemDescriptionText, contactList, itemDueDateDate, itemDueDateTime;
-    private Button datePickButton, timePickButton, addContactButton, removeAllContactButton;
+    private Button datePickButton, timePickButton, addContactButton, removeAllContactButton, removeDateButton;
     ArrayList<Uri> contactURIs = new ArrayList<>();
 
     private String dateString, timeString;
@@ -77,6 +77,7 @@ public class DetailviewActivity extends AppCompatActivity implements View.OnClic
         timePickButton = (Button) findViewById(R.id.time_pick_button);
         addContactButton = (Button) findViewById(R.id.addContactButton);
         removeAllContactButton = (Button) findViewById(R.id.removeAllContactButton);
+        removeDateButton = (Button) findViewById(R.id.date_delete_button);
 
         favouriteToggle = (ToggleButton) findViewById(R.id.toggle_favButton);
         doneToggle = (ToggleButton) findViewById(R.id.toggle_doneButton);
@@ -89,10 +90,12 @@ public class DetailviewActivity extends AppCompatActivity implements View.OnClic
         if (item != null) {
             itemNameText.setText(item.getName());
             itemDescriptionText.setText(item.getDescription());
-            dateString = new SimpleDateFormat("dd. MM. yyyy", Locale.GERMANY).format(new Date(item.getDueDate()));
-            timeString = new SimpleDateFormat("HH:mm", Locale.GERMANY).format(new Date(item.getDueDate()));
-            itemDueDateDate.setText(dateString);
-            itemDueDateTime.setText(timeString);
+            if (item.getDueDate() != 0) {
+                dateString = new SimpleDateFormat("dd. MM. yyyy", Locale.GERMANY).format(new Date(item.getDueDate()));
+                timeString = new SimpleDateFormat("HH:mm", Locale.GERMANY).format(new Date(item.getDueDate()));
+                itemDueDateDate.setText(dateString);
+                itemDueDateTime.setText(timeString);
+            }
             favouriteToggle.setChecked(item.isFavourite());
             doneToggle.setChecked(item.isDone());
 
@@ -126,6 +129,7 @@ public class DetailviewActivity extends AppCompatActivity implements View.OnClic
 
         addContactButton.setOnClickListener(this);
         removeAllContactButton.setOnClickListener(this);
+        removeDateButton.setOnClickListener(this);
 
     }
 
@@ -194,6 +198,12 @@ public class DetailviewActivity extends AppCompatActivity implements View.OnClic
             contactList.setText("");
             contactURIs = null;
         }
+
+        else if (v == removeDateButton) {
+            itemDueDateDate.setText("");
+            itemDueDateTime.setText("");
+        }
+
     }
 
     private void saveItem() {
@@ -213,15 +223,17 @@ public class DetailviewActivity extends AppCompatActivity implements View.OnClic
         favourite = favouriteToggle.isChecked();
         done = doneToggle.isChecked();
 
-        long itemDueDate = System.currentTimeMillis();
+        long itemDueDate = 0;
 
         SimpleDateFormat f = new SimpleDateFormat("dd. MM. yyyy HH:mm", Locale.GERMANY);
         try {
             Date d = f.parse(itemDueDateDate.getText().toString() + " " + itemDueDateTime.getText().toString());
             itemDueDate = d.getTime();
+            Log.i(logger, "Date parsed: " + itemDueDate);
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        Log.i(logger, "Date: " + itemDueDate);
         ToDo item = new ToDo(itemName, itemDescription, itemDueDate, favourite, done, contacts);
 
 
@@ -250,7 +262,7 @@ public class DetailviewActivity extends AppCompatActivity implements View.OnClic
         favourite = favouriteToggle.isChecked();
         done = doneToggle.isChecked();
 
-        long itemDueDate = System.currentTimeMillis();
+        long itemDueDate = 0;
 
         SimpleDateFormat f = new SimpleDateFormat("dd. MM. yyyy HH:mm", Locale.GERMANY);
         try {
@@ -259,6 +271,7 @@ public class DetailviewActivity extends AppCompatActivity implements View.OnClic
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        Log.i(logger, "Date: " + itemDueDate);
 
         ToDo item = new ToDo(itemId, itemName, itemDescription, itemDueDate, favourite, done, contacts);
         returnIntent.putExtra(TODO_ITEM, item);
@@ -292,8 +305,6 @@ public class DetailviewActivity extends AppCompatActivity implements View.OnClic
         alert.show();
 
     }
-
-
 
     private void addContact() {
         Intent pickContactIntent = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);

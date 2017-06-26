@@ -19,9 +19,9 @@ import retrofit2.http.Path;
  * Created by Gäbeler on 08.06.2017.
  */
 
-public class RemoteToDoCRUDOperationsImpl implements IToDoCRUDOperations {
+public class LocalAndRemoteToDoCRUDOperationsImpl implements IToDoCRUDOperations {
 
-    protected static String logger = RemoteToDoCRUDOperationsImpl.class.getSimpleName();
+    protected static String logger = LocalAndRemoteToDoCRUDOperationsImpl.class.getSimpleName();
 
     public interface IToDoCRUDWebAPI {
 
@@ -44,7 +44,7 @@ public class RemoteToDoCRUDOperationsImpl implements IToDoCRUDOperations {
 
     private IToDoCRUDWebAPI webAPI;
 
-    public RemoteToDoCRUDOperationsImpl() {
+    public LocalAndRemoteToDoCRUDOperationsImpl() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://10.0.2.2:8080/")
                 .addConverterFactory(GsonConverterFactory.create())

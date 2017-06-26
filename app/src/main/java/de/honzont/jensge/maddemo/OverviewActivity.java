@@ -37,8 +37,8 @@ import de.honzont.jensge.maddemo.model.LocalToDoCRUDOperationsImpl;
 import de.honzont.jensge.maddemo.model.ToDo;
 
 import static de.honzont.jensge.maddemo.DetailviewActivity.TODO_ITEM;
+import static de.honzont.jensge.maddemo.DetailviewActivity.logger;
 import static de.honzont.jensge.maddemo.LoginviewActivity.SERVCON;
-import static de.honzont.jensge.maddemo.LoginviewActivity.logger;
 
 public class OverviewActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -79,11 +79,21 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
         helloText.setText(R.string.app_content);
         serverConnection = getIntent().getExtras().getBoolean(SERVCON);
         if (!serverConnection) {
-            Toast.makeText(getApplicationContext(), "Local Mode", Toast.LENGTH_LONG).show();
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setCancelable(false);
+            builder.setMessage("Server not found, running Local Mode");
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+            AlertDialog alert = builder.create();
+            alert.show();
         }
-        else if (serverConnection) {
-            Toast.makeText(getApplicationContext(), "Remote Mode", Toast.LENGTH_LONG).show();
-        }
+//        else {
+//            Toast.makeText(getApplicationContext(), "Remote Mode", Toast.LENGTH_LONG).show();
+//        }
 
         // 4. set listeners to allow user interactions
         helloText.setOnClickListener(this);
@@ -117,6 +127,7 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
 
                     // create a new instance of the view holder
                     ItemViewHolder itemViewHolder = new ItemViewHolder();
+
                     //set the itemNameView attribut on view holder to text view
                     itemViewHolder.itemNameView = itemNameView;
                     itemViewHolder.itemDescriptionView = itemDescriptionView;
@@ -166,10 +177,11 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
 
                 viewHolder.itemDoneToggle.setChecked(item.isDone());
                 viewHolder.itemFavToggle.setChecked(item.isFavourite());
-                viewHolder.itemDueDateView.setText(new SimpleDateFormat("dd. MM. yyyy", Locale.GERMANY).format(new Date(item.getDueDate())));
+                if (item.getDueDate() != 0) {
+                    viewHolder.itemDueDateView.setText(new SimpleDateFormat("dd. MM. yyyy", Locale.GERMANY).format(new Date(item.getDueDate())));
+                }
 
-                long currentTime = System.currentTimeMillis();
-                if (item.getDueDate() < currentTime) {
+                if (item.getDueDate() < System.currentTimeMillis() && item.getDueDate() != 0) {
                     viewHolder.itemDueDateView.setTextColor(Color.RED);
                 } else {
                     viewHolder.itemDueDateView.setTextColor(Color.BLACK);
@@ -179,6 +191,10 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
                     viewHolder.itemNameView.setTypeface(null, Typeface.ITALIC);
                 } else {
                     viewHolder.itemNameView.setTypeface(null, Typeface.NORMAL);
+                }
+
+                if (item.getDueDate() == 0) {
+                    viewHolder.itemDueDateView.setText("");
                 }
 
 
@@ -220,27 +236,41 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
         crudOperationsLocal = new LocalToDoCRUDOperationsImpl(this);
 
 
-        if (serverConnection && crudOperationsLocal.readAllToDos().isEmpty()) {
-            syncToDosRemoteToLocal();
-        }
+        syncAndStartOverview();
 
-        if (serverConnection && !crudOperationsLocal.readAllToDos().isEmpty()) {
-            Log.i(logger, "Start Delete Remote Todos");
-            deleteRemoteToDos();
-            Log.i(logger, "End Delete Remote Todos");
 
-        }
 //        if (!serverConnection) {
 //            readLocalItemsAndFillListView();
 //        } else if (serverConnection) {
 //            readItemsAndFillListView();
 //        }
-        readLocalItemsAndFillListView();
+
 
 
     }
 
-    private void deleteRemoteToDos() {
+    private void syncAndStartOverview() {
+        if (serverConnection && crudOperationsLocal.readAllToDos().isEmpty()) {
+            Log.i(logger, "Start Sync Remote To Local Todos");
+            syncToDosRemoteToLocal();
+            Log.i(logger, "End Sync Remote To Local Todos");
+        }
+
+        if (serverConnection && !crudOperationsLocal.readAllToDos().isEmpty()) {
+            Log.i(logger, "Start Delete Remote Todos");
+            deleteRemoteToDosAndSyncLocalToRemote();
+            Log.i(logger, "End Delete Remote Todos");
+
+        }
+
+        if (!serverConnection) {
+            readLocalItemsAndFillListView();
+        }
+
+
+    }
+
+    private void deleteRemoteToDosAndSyncLocalToRemote() {
         progressDialog.setMessage("Read Remote Items and Delete them");
         progressDialog.show();
         crudOperations.readAllToDos(new IToDoCRUDOperationsASync.CallbackFunction<List<ToDo>>() {
@@ -275,9 +305,13 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
                 for (ToDo item : result) {
                     crudOperationsLocal.createToDo(item);
                 }
-            }
+                Log.i(logger, "sync Todos Remote2Local Done");
+                Log.i(logger, "Start Read Local Items and Fill List");
+                readLocalItemsAndFillListView();
+                Log.i(logger, "End Read Local Items and Fill List");
+                }
         });
-        Log.i(logger, "sync Todos Remote2Local Done");
+
     }
 
     private void syncToDosLocalToRemote() {
@@ -292,7 +326,11 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
                }
             });
         }
+        Log.i(logger, "Start Read Local Items and Fill List");
+        readLocalItemsAndFillListView();
+        Log.i(logger, "End Read Local Items and Fill List");
         progressDialog.hide();
+
         Log.i(logger, "Local2Remote Sync Done");
     }
 
@@ -306,23 +344,24 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
         Log.i(logger, "Local items: " + itemsList);
         progressDialog.hide();
         sortByNameDone();
+        this.listViewAdapter.notifyDataSetChanged();
     }
 
-    private void readItemsAndFillListView() {
-        progressDialog.setMessage("Read Remote Items and Fill in List View");
-        progressDialog.show();
-        crudOperations.readAllToDos(new IToDoCRUDOperationsASync.CallbackFunction<List<ToDo>>() {
-            @Override
-            public void process(List<ToDo> result) {
-                progressDialog.hide();
-                for (ToDo item : result) {
-                    addItemToListView(item);
-                }
-                Log.i(logger, "items: " + itemsList);
-                sortByNameDone();
-            }
-        });
-    }
+//    private void readItemsAndFillListView() {
+//        progressDialog.setMessage("Read Remote Items and Fill in List View");
+//        progressDialog.show();
+//        crudOperations.readAllToDos(new IToDoCRUDOperationsASync.CallbackFunction<List<ToDo>>() {
+//            @Override
+//            public void process(List<ToDo> result) {
+//                progressDialog.hide();
+//                for (ToDo item : result) {
+//                    addItemToListView(item);
+//                }
+//                Log.i(logger, "items: " + itemsList);
+//                sortByNameDone();
+//            }
+//        });
+//    }
 
 
     private void showDetailviewForItemName(ToDo item) {
@@ -360,24 +399,23 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void createAndShowItem(/*final*/ ToDo item) {
-        if (!serverConnection) {
-            progressDialog.setMessage("Create local ToDo");
-            progressDialog.show();
-            crudOperationsLocal.createToDo(item);
-            addItemToListView(item);
-            sortByNameDone();
-            progressDialog.hide();
-            Toast.makeText(getApplicationContext(), "Local ToDo created", Toast.LENGTH_LONG).show();
-        } else if (serverConnection) {
+        progressDialog.setMessage("Create local ToDo");
+        progressDialog.show();
+        crudOperationsLocal.createToDo(item);
+        addItemToListView(item);
+//        sortByNameDone();
+        progressDialog.hide();
+        Toast.makeText(getApplicationContext(), "Local ToDo created", Toast.LENGTH_SHORT).show();
+        if (serverConnection) {
             progressDialog.setMessage("Create remote ToDo");
             progressDialog.show();
             crudOperations.createToDo(item, new IToDoCRUDOperationsASync.CallbackFunction<ToDo>() {
                 @Override
                 public void process(ToDo result) {
-                    addItemToListView(result);
-                    sortByNameDone();
+//                    addItemToListView(result);
+//                    sortByNameDone();
                     progressDialog.hide();
-                    Toast.makeText(getApplicationContext(), "Remote ToDo created", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Remote ToDo created", Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -388,48 +426,49 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
 
     private void addItemToListView(ToDo item) {
         listViewAdapter.add(item);
+        Log.i(logger, "Item Added to ListviewAdapter: " + item);
     }
 
     private void deleteAndRemoveItem(final ToDo item) {
-        if (!serverConnection) {
-            boolean deleted = crudOperationsLocal.deleteToDo(item.getId());
-            if (deleted) {
-                listViewAdapter.remove(findDataItemInList(item.getId()));
-            }
-            Toast.makeText(getApplicationContext(), "Local ToDo deleted", Toast.LENGTH_LONG).show();
-        } else if (serverConnection) {
+        boolean deleted = crudOperationsLocal.deleteToDo(item.getId());
+        if (deleted) {
+            listViewAdapter.remove(findDataItemInList(item.getId()));
+        }
+        Toast.makeText(getApplicationContext(), "Local ToDo deleted", Toast.LENGTH_SHORT).show();
+        if (serverConnection) {
             crudOperations.deleteToDo(item.getId(), new IToDoCRUDOperationsASync.CallbackFunction<Boolean>() {
                 @Override
                 public void process(Boolean deleted) {
                     if (deleted) {
-                        listViewAdapter.remove(findDataItemInList(item.getId()));
+//                        listViewAdapter.remove(findDataItemInList(item.getId()));
                     }
                 }
             });
-            Toast.makeText(getApplicationContext(), "Remote ToDo deleted", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Remote ToDo deleted", Toast.LENGTH_SHORT).show();
         }
 
     }
 
     private void updateItem(final ToDo item) {
-        if (!serverConnection) {
-            progressDialog.setMessage("Local ToDo updating");
-            progressDialog.show();
-            crudOperationsLocal.updateToDo(item.getId(), item);
-            listViewAdapter.remove(findDataItemInList(item.getId()));
-            listViewAdapter.add(item);
-            progressDialog.hide();
-            sortByNameDone();
-        } else if (serverConnection) {
+        progressDialog.setMessage("Local ToDo updating");
+        progressDialog.show();
+        crudOperationsLocal.updateToDo(item.getId(), item);
+        listViewAdapter.remove(findDataItemInList(item.getId()));
+        listViewAdapter.add(item);
+        progressDialog.hide();
+//        sortByNameDone();
+        Toast.makeText(getApplicationContext(), "Local ToDo updated", Toast.LENGTH_SHORT).show();
+        if (serverConnection) {
             progressDialog.setMessage("Remote ToDo updating");
             progressDialog.show();
             crudOperations.updateToDo(item.getId(), item, new IToDoCRUDOperationsASync.CallbackFunction<ToDo>() {
                 @Override
                 public void process(ToDo result) {
-                    listViewAdapter.remove(findDataItemInList(item.getId()));
-                    listViewAdapter.add(item);
+//                    listViewAdapter.remove(findDataItemInList(item.getId()));
+//                    listViewAdapter.add(item);
                     progressDialog.hide();
-                    sortByNameDone();
+//                    sortByNameDone();
+                    Toast.makeText(getApplicationContext(), "Remote ToDo updated", Toast.LENGTH_SHORT).show();
                 }
             });
         }

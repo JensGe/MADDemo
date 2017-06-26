@@ -222,12 +222,12 @@ public class LoginviewActivity extends AppCompatActivity implements View.OnClick
             @Override
             protected void onPostExecute(Boolean con) {
                 if (!con) {
-                    Toast.makeText(getApplicationContext(),"Server not reachable", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(),"Server not reachable", Toast.LENGTH_SHORT).show();
                     appHasServerConnection = con;
                     runApplication(false);
                 }
                 else if (con) {
-                    Toast.makeText(getApplicationContext(),"Connected to Server", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(),"Connected to Server", Toast.LENGTH_SHORT).show();
                     appHasServerConnection = true;
                 }
                 progressDialog.hide();
