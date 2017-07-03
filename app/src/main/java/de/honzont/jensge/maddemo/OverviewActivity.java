@@ -54,7 +54,7 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
     private boolean serverConnection;
 
     private ProgressDialog progressDialog;
-    private IToDoCRUDOperationsASync crudOperations;
+    private IToDoCRUDOperationsASync crudOperationsRemote;
     private IToDoCRUDOperations crudOperationsLocal;
 
     @Override
@@ -234,7 +234,7 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
             }
         });
 
-        crudOperations = ((ToDoApplication) getApplication()).getCRUDOperationsImpl();
+        crudOperationsRemote = ((ToDoApplication) getApplication()).getCRUDOperationsImpl();
         crudOperationsLocal = new LocalToDoCRUDOperationsImpl(this);
 
 
@@ -275,12 +275,12 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
     private void deleteRemoteToDosAndSyncLocalToRemote() {
         progressDialog.setMessage("Read Remote Items and Delete them");
         progressDialog.show();
-        crudOperations.readAllToDos(new IToDoCRUDOperationsASync.CallbackFunction<List<ToDo>>() {
+        crudOperationsRemote.readAllToDos(new IToDoCRUDOperationsASync.CallbackFunction<List<ToDo>>() {
             @Override
             public void process(List<ToDo> result) {
                 Log.i(logger, "ToDo List to Delete: " + result.toString());
                 for (final ToDo item : result) {
-                    crudOperations.deleteToDo(item.getId(), new IToDoCRUDOperationsASync.CallbackFunction<Boolean>() {
+                    crudOperationsRemote.deleteToDo(item.getId(), new IToDoCRUDOperationsASync.CallbackFunction<Boolean>() {
                         @Override
                         public void process(Boolean result) {
                             Log.i(logger, "Deleted Todo" + item);
@@ -300,7 +300,7 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
     private void syncToDosRemoteToLocal() {
         progressDialog.setMessage("Read Remote Items and Fill Local DB");
         progressDialog.show();
-        crudOperations.readAllToDos(new IToDoCRUDOperationsASync.CallbackFunction<List<ToDo>>() {
+        crudOperationsRemote.readAllToDos(new IToDoCRUDOperationsASync.CallbackFunction<List<ToDo>>() {
             @Override
             public void process(List<ToDo> result) {
                 progressDialog.hide();
@@ -321,7 +321,7 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
         progressDialog.show();
         final List<ToDo> localToDos = crudOperationsLocal.readAllToDos();
         for (final ToDo item : localToDos) {
-            crudOperations.createToDo(item, new IToDoCRUDOperationsASync.CallbackFunction<ToDo>() {
+            crudOperationsRemote.createToDo(item, new IToDoCRUDOperationsASync.CallbackFunction<ToDo>() {
                 @Override
                 public void process(ToDo result) {
                     Log.i(logger, "Item Created: " + item + result);
@@ -410,7 +410,7 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
         if (serverConnection) {
             progressDialog.setMessage("Create remote ToDo");
             progressDialog.show();
-            crudOperations.createToDo(item, new IToDoCRUDOperationsASync.CallbackFunction<ToDo>() {
+            crudOperationsRemote.createToDo(item, new IToDoCRUDOperationsASync.CallbackFunction<ToDo>() {
                 @Override
                 public void process(ToDo result) {
                     progressDialog.hide();
@@ -435,7 +435,7 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
         }
         Toast.makeText(getApplicationContext(), "Local ToDo deleted", Toast.LENGTH_SHORT).show();
         if (serverConnection) {
-            crudOperations.deleteToDo(item.getId(), new IToDoCRUDOperationsASync.CallbackFunction<Boolean>() {
+            crudOperationsRemote.deleteToDo(item.getId(), new IToDoCRUDOperationsASync.CallbackFunction<Boolean>() {
                 @Override
                 public void process(Boolean deleted) {
                     if (deleted) {
@@ -460,7 +460,7 @@ public class OverviewActivity extends AppCompatActivity implements View.OnClickL
         if (serverConnection) {
             progressDialog.setMessage("Remote ToDo updating");
             progressDialog.show();
-            crudOperations.updateToDo(item.getId(), item, new IToDoCRUDOperationsASync.CallbackFunction<ToDo>() {
+            crudOperationsRemote.updateToDo(item.getId(), item, new IToDoCRUDOperationsASync.CallbackFunction<ToDo>() {
                 @Override
                 public void process(ToDo result) {
 //                    listViewAdapter.remove(findDataItemInList(item.getId()));
